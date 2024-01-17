@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "ea60b779-7f8e-475a-a727-69f899cb114f",
+		"name": "midas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30523351"
+	},
+	"item": [
+		{
+			"name": "clock angle",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"time\": \"17:30\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/midas/clock-angle",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"midas",
+						"clock-angle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "remote asso",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"listStr\": [\"BATHROOM\", \"BATH SALTS\", \"BLOODBATH\"] }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/midas/remote-associate",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"midas",
+						"remote-associate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "snack and ladders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ladderPosition\": [\r\n        [\r\n            3,\r\n            39\r\n        ],\r\n        [\r\n            14,\r\n            35\r\n        ],\r\n        [\r\n            31,\r\n            70\r\n        ],\r\n        [\r\n            44,\r\n            65\r\n        ],\r\n        [\r\n            47,\r\n            86\r\n        ],\r\n        [\r\n            63,\r\n            83\r\n        ],\r\n        [\r\n            71,\r\n            93\r\n        ]\r\n    ],\r\n    \"snakesPosition\": [\r\n        [\r\n            21,\r\n            4\r\n        ],\r\n        [\r\n            30,\r\n            8\r\n        ],\r\n        [\r\n            55,\r\n            38\r\n        ],\r\n        [\r\n            79,\r\n            42\r\n        ],\r\n        [\r\n            87,\r\n            54\r\n        ],\r\n        [\r\n            91,\r\n            48\r\n        ],\r\n        [\r\n            96,\r\n            66\r\n        ]\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/midas/snack-and-ladders",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"midas",
+						"snack-and-ladders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dimension trip",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start\": 0,\r\n    \"shops\": [\r\n        4,\r\n        9\r\n    ],\r\n    \"stations\": [\r\n        3,\r\n        6,\r\n        8\r\n    ],\r\n    \"target\": 11\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/midas/dimension-trip",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"midas",
+						"dimension-trip"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:3009",
+			"type": "string"
+		}
+	]
+}

@@ -38,14 +38,10 @@ class MidasController {
                 throw new Error('listStr must be a string array');
             }
 
-            // find relation srt
-            let relationSrt = '';
-            for (let i = 0; i < String(listStr[0]).length; i++) {
-                if (String(listStr[1]).includes(String(listStr[0])[i])) relationSrt += String(listStr[0])[i];
-            }
+            const [srt1, str2] = listStr.map(String);
 
-            const draftStr = listStr.join(',').replace(/\s/g, "");
-            const resultSrt = draftStr.replace(new RegExp(relationSrt, 'g'), '');
+            const commonChar = [...new Set(srt1)].filter((char) => str2.includes(char)).join('');
+            const resultSrt = listStr.join(',').replace(/\s/g, '').replace(new RegExp(commonChar, 'g'), '');
 
             res.status(200);
             res.send(resultSrt.split(','));

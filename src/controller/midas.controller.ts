@@ -9,9 +9,6 @@ type boardItem = {
 
 type boardCard = boardItem[];
 
-type inputDataItem = [number, number];
-type listInputData = inputDataItem[];
-
 class MidasController {
     clockAngle(req: Request, res: Response) {
         try {
@@ -74,80 +71,59 @@ class MidasController {
             if (!Array.isArray(snakesPosition)) {
                 throw new Error('Invalid format');
             }
-            // init template
-            let row = 0;
-            let currentIndex = 1;
-            while (row < 10) {
-                let col = 0;
-                while (col < 10) {
+
+            // init board template
+            for (let row = 0; row < 10; row++) {
+                for (let col = 0; col < 10; col++) {
+                    const index = row * 10 + col + 1;
                     board.push({
                         row,
                         col,
-                        index: currentIndex
+                        index
                     });
-                    currentIndex += 1;
-                    col += 1;
                 }
-                row += 1;
-                col = 0;
             }
 
             // run game
             // init default value
-            const minimumResult = [];
+            const minimumResult: number[] = [];
             let cursor: boardItem = {
                 col: 0,
                 row: 0,
                 index: 1
             };
 
+            // get merest item
+            const getNearestItem = (baseArr: [number, number][], currentIndex: number) => {
+                for (const [draftPoint, draftPointTo] of baseArr) {
+                    if (draftPoint > currentIndex) {
+                        return [draftPoint, draftPointTo];
+                    }
+                }
+                return [undefined, undefined];
+            };
+
+            const calculateNewCursor = (index: number) => {
+                const tens = Math.floor(index / 10);
+                const units = index % 10;
+                return {
+                    col: units - 1,
+                    index: index,
+                    row: tens - 1,
+                };
+            };
+
             // game runing
             while (cursor.index < 100) {
-                let nearestLadder: any, pointUpTo: any, nearestSnack: any, pointDownTo: any;
-                // get nearest ladder
-                ladderPosition.length && ladderPosition.find((item) => {
-                    if (!item) {
-                        return false;
-                    }
-                    const [draftPointUp, draftPointUpTo] = item;
-                    if (draftPointUp > cursor.index) {
-                        nearestLadder = draftPointUp;
-                        pointUpTo = draftPointUpTo;
-                        return true;
-                    } else {
-                        // ladderPosition.shift();
-                        return false;
-                    }
-                });
-
-                // get nearest snack
-                snakesPosition.length && snakesPosition.find((item) => {
-                    if (!item) {
-                        return false;
-                    }
-                    const [draftPointDown, draftPointDownTo] = item;
-                    if (draftPointDown > cursor.index) {
-                        nearestSnack = draftPointDown;
-                        pointDownTo = draftPointDownTo;
-                        return true;
-                    } else {
-                        // snakesPosition.shift();
-                        return false;
-                    }
-                });
+                const [nearestLadder, pointUpTo] = getNearestItem(ladderPosition, cursor.index);
+                const [nearestSnack, pointDownTo] = getNearestItem(snakesPosition, cursor.index);
 
                 // calculate dice
                 const totalStepToLadder = nearestLadder ? nearestLadder - cursor.index : 100 - cursor.index;
                 const totalStepToSnack = nearestSnack ? nearestSnack - cursor.index : undefined;
 
                 // check and calculate step
-                let moves = undefined;
-                if (totalStepToLadder) {
-                    moves = totalStepToLadder >= maxStepCanRun ? maxStepCanRun : totalStepToLadder;
-                }
-                else {
-                    moves = cursor.index < 100 - maxStepCanRun ? maxStepCanRun : 100 - cursor.index;
-                }
+                let moves = totalStepToLadder ? Math.min(totalStepToLadder, maxStepCanRun) : Math.min(maxStepCanRun, 100 - cursor.index);
                 if (!moves) { throw new Error('Incorrect algorism calculate moves'); }
 
                 totalStepToSnack && moves === totalStepToSnack ? moves -= 1 : null;
@@ -159,17 +135,10 @@ class MidasController {
                 let newIndex = cursor.index += moves;
 
                 // check up ladder
-                if (newIndex === nearestLadder) { newIndex = pointUpTo; }
-                console.log('\n');
+                if (newIndex === nearestLadder && pointUpTo) { newIndex = pointUpTo; }
 
                 // calculate new cursor
-                const tens = Math.floor(newIndex / 10);
-                const units = newIndex % 10;
-                cursor = {
-                    col: units - 1,
-                    index: newIndex,
-                    row: tens - 1,
-                };
+                cursor = calculateNewCursor(newIndex);
             }
 
             res.status(200);

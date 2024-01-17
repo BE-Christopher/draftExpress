@@ -15,12 +15,10 @@ class MidasController {
             const { time } = req.body;
             // parse str + convert number
             const [hour, minute] = String(time).split(':');
-            const totalHour = Number(hour) > 12 ? Number(hour) - 12 : Number(hour);
-            const totalMinus = Number(minute) === 0 ? 12 : Number(minute) / 5;
-
-            // calculate angle
-            const angle = (totalMinus - totalHour) * 30;
-
+            
+            const hourAngle = (Number(hour) % 12 + Number(minute) / 60) * 30;
+            const minuteAngle = Number(minute) * 6;
+            const angle = Math.abs(hourAngle - minuteAngle);
             res.status(200);
             res.send(`angle between hour and minus is ${angle} degree`);
         } catch (error) {

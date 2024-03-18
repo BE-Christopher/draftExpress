@@ -1,5 +1,8 @@
 import { DataSource } from "typeorm";
-import { User } from "./entities";
+import {
+    Location,
+    User
+} from "./entities";
 
 const AppDataSource = new DataSource({
     type: "mysql",
@@ -9,7 +12,8 @@ const AppDataSource = new DataSource({
     password: "MysqlJackson",
     database: "draft_ecommerce",
     entities: [
-        User
+        User,
+        Location
     ],
     migrationsRun: true,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

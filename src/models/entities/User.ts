@@ -1,21 +1,47 @@
 'use strict';
 
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { EGender, EUserRole } from "../../interfaces/User.baseController";
+import { Location } from "./Location";
 
 @Entity()
 export class User {
     @PrimaryColumn()
     id: number;
 
-    @Column()
+    @Column({ nullable: false })
     email: string;
 
-    @Column()
+    @Column({ nullable: false })
     password: string;
 
-    @Column()
+    @Column({ nullable: false })
     personalId: string;
 
-    @Column()
+    @Column({ nullable: false, default: 'Registering User' })
     name: string;
+
+    @Column({ nullable: true })
+    birthDate: Date;
+
+    @Column({ nullable: true })
+    age: number;
+
+    @Column({ nullable: false, type: 'enum', enum: EGender, default: EGender.Unknown })
+    gender: EGender;
+
+    @Column({ nullable: false, type: 'enum', enum: EUserRole, default: EUserRole.User })
+    role: EUserRole;
+
+    @Column({ nullable: true })
+    phone: string;
+
+    @Column({ default: false })
+    isVerified: boolean;
+
+    @Column({ default: false })
+    isDeleted: boolean;
+
+    @OneToMany(() => Location, location => location.id, { cascade: true, nullable: true })
+    locations: Location[];
 }

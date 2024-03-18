@@ -32,15 +32,15 @@ export default class LocationDataQuery implements ILocationDataQuery {
         return newLocation;
     }
 
-    async updateLocation(id: number, location: DeepPartial<Location>) {
+    updateLocation(id: number, location: DeepPartial<Location>) {
         return locationTb.update(id, location);
     }
 
-    async softDeleteLocation(id: number) {
+    softDeleteLocation(id: number) {
         return locationTb.softDelete(id);
     }
 
-    async hardDeleteLocation(id: number) {
+    hardDeleteLocation(id: number) {
         return locationTb.delete(id);
     }
 

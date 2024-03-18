@@ -11,8 +11,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(routers.getRoutes());
+app.use
 // db connect
-
 AppDataSource.initialize()
     .then(() => {
         console.log("Data Source has been initialized!");

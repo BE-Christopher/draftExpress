@@ -3,12 +3,10 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { EGender, EUserRole } from "../../interfaces/User.baseController";
 import { Location } from "./Location";
+import { BaseEntity } from "./Base";
 
 @Entity()
-export class User {
-    @PrimaryColumn()
-    id: number;
-
+export class User extends BaseEntity {
     @Column({ nullable: false })
     email: string;
 

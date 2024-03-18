@@ -1,12 +1,14 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitUserAndLocationTb1710723340812 implements MigrationInterface {
-    name = 'InitUserAndLocationTb1710723340812'
+export class InitTbUserAndLocation1710787373633 implements MigrationInterface {
+    name = 'InitTbUserAndLocation1710787373633'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             CREATE TABLE \`locations\` (
-                \`id\` int NOT NULL,
+                \`id\` int NOT NULL AUTO_INCREMENT,
+                \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+                \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
                 \`address\` varchar(255) NOT NULL,
                 \`street\` varchar(255) NOT NULL,
                 \`district\` varchar(255) NOT NULL,
@@ -18,7 +20,9 @@ export class InitUserAndLocationTb1710723340812 implements MigrationInterface {
         `);
         await queryRunner.query(`
             CREATE TABLE \`user\` (
-                \`id\` int NOT NULL,
+                \`id\` int NOT NULL AUTO_INCREMENT,
+                \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+                \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
                 \`email\` varchar(255) NOT NULL,
                 \`password\` varchar(255) NOT NULL,
                 \`personalId\` varchar(255) NOT NULL,

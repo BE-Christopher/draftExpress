@@ -1,31 +1,19 @@
-export interface IWard {
-    id: number;
-    name: string;
+export interface ILocationQuery {
+    id?: number;
+    address?: string;
+    street?: string;
+    district?: string;
+    ward?: string;
+    country?: string;
+    userId?: number;
 }
 
-export interface IDistinct {
-    id: number;
-    name: string;
-    wards: IWard[];
-}
-
-export interface IRegion {
-    id: number;
-    name: string;
-    districts: IDistinct[];
-}
-
-export interface ICountry {
-    id: number;
-    name: string;
-    regions: IRegion[];
-}
-
-export interface ILocation {
+export interface ICreateLocation {
     id: number;
     address: string;
     street: string;
-    distinct: IDistinct;
-    region: IRegion;
-    country: ICountry;
+    district: string;
+    ward: string;
+    country: string;
+    userId: number;
 }

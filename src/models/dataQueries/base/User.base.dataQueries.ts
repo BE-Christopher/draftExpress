@@ -3,8 +3,8 @@ import AppDataSource from "../../data-source";
 import { User } from "../../entities";
 
 type getUserQuery = {
-    options: FindOptionsWhere<User>,
-    relations: FindOptionsRelations<User>;
+    options?: FindOptionsWhere<User>,
+    relations?: FindOptionsRelations<User>;
 };
 
 type updateUserPayload = {

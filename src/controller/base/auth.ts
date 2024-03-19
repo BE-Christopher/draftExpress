@@ -22,12 +22,10 @@ export type IUserVerifyData = {
 const secretKey = 'e05a8d484a5a6d5ab76dbb287e09ff4d89a7d8c196fbb9c9b6d9d1a9a58d16d2';
 class Auth extends BaseController implements IAuth {
     userQuery;
-    errorMessage;
 
     constructor() {
         super();
         this.userQuery = new UserDataQuery();
-        this.errorMessage = new ErrorMessage();
     }
 
     private jwtRenderToken(data: any) {

@@ -1,9 +1,11 @@
 'use strict';
 
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { EGender, EUserRole } from "../../interfaces/User.baseController";
 import { Location } from "./Location";
 import { BaseEntity } from "./Base";
+import { Shop } from "./Shop";
+import { Feedback } from "./Feedback";
 
 @Entity()
 export class User extends BaseEntity {
@@ -42,4 +44,13 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Location, location => location.id, { cascade: true, nullable: true })
     locations: Location[];
+
+    @OneToOne(() => Shop, shop => shop.author, { nullable: true, cascade: true })
+    shop: Shop;
+
+    @ManyToMany(() => Shop)
+    shopFollowing: Shop[];
+
+    @OneToMany(() => Feedback, feedback => feedback.id, { nullable: true, cascade: true })
+    feedbacks: Feedback[];
 }

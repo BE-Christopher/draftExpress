@@ -3,7 +3,7 @@ import { EShopStatus } from "../../../interfaces";
 import ShopeBaseDataQuery, { IShopDataQuery } from "../base/Shop.base.dataQueries";
 import { Shop } from "../../entities";
 
-interface IBuyerShopDataQuery extends IShopDataQuery {
+export interface IBuyerShopDataQuery extends IShopDataQuery {
     updateMyShop(id: number, payload: DeepPartial<Shop>): Promise<UpdateResult>;
     disableMyShop(id: number): Promise<UpdateResult>;
     closeMyShop(id: number): Promise<UpdateResult>;
@@ -31,4 +31,4 @@ class BuyerShopDataQuery extends ShopeBaseDataQuery implements IBuyerShopDataQue
     }
 }
 
-export default new BuyerShopDataQuery();
+export const buyerShopDataQuery = new BuyerShopDataQuery();

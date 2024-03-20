@@ -13,4 +13,4 @@ class AdminShopDataQuery extends ShopeBaseDataQuery implements IAdminShopDataQue
     }
 }
 
-export default new AdminShopDataQuery();
+export const adminShopDataQuery = new AdminShopDataQuery();

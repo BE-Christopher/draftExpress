@@ -12,7 +12,7 @@ import { ProductOptions } from "./ProductOptions";
 export class Product extends BaseEntity {
     @Column({ nullable: false })
     name: string;
-    
+
     @Column({ type: 'enum', enum: ECurrencyUnit, default: ECurrencyUnit.VND })
     unit: ECurrencyUnit;
 
@@ -37,9 +37,9 @@ export class Product extends BaseEntity {
     @Column({ default: 0 })
     sold: number;
 
-    @Column({ default: 0 })
-    inventory: number;
-
     @OneToMany(() => ProductOptions, productOptions => productOptions.id, { nullable: true, cascade: true })
     productOptions: ProductOptions[];
+
+    @Column({ type: 'json', nullable: true })
+    productOptionList: any[];
 }

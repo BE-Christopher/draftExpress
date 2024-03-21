@@ -53,4 +53,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Feedback, feedback => feedback.id, { nullable: true, cascade: true })
     feedbacks: Feedback[];
+
+    @Column({ nullable: true })
+    avatar: string;
 }

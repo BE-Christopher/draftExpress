@@ -21,7 +21,7 @@ export type GetAllProductLocation = {
     country?: string,
     ward?: string,
     district?: string;
-}
+};
 
 export type GetAllProductPayload = {
     rating?: number,
@@ -126,8 +126,8 @@ export class ProductBaseDataQuery implements IProductBaseDataQuery {
                 price: true,
                 unit: true,
                 description: true,
-                inventory: true,
                 sold: true,
+                productOptionList: true,
                 shop: {
                     id: true,
                     asserts: {
@@ -147,6 +147,7 @@ export class ProductBaseDataQuery implements IProductBaseDataQuery {
                     id: true,
                     isAvailable: true,
                     type: true,
+                    inventory: true,
                 },
                 asserts: {
                     id: true,

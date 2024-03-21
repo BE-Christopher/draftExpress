@@ -1,3 +1,4 @@
+import { EShopStatus } from "../../../interfaces";
 import AppDataSource from "../../data-source";
 import { Shop } from "../../entities";
 import { } from 'typeorm';
@@ -15,6 +16,12 @@ export type IShopLocationQuery = {
 export type ShopGetAllPayload = {
     industries?: number,
     location?: IShopLocationQuery,
+    limit: number,
+    page: number,
+};
+
+export type GetAllShopByIndustry = {
+    industryId: number,
     limit: number,
     page: number,
 };
@@ -114,6 +121,40 @@ export default class ShopeBaseDataQuery implements IShopDataQuery {
                 asserts: true,
             },
 
+        });
+    }
+
+    getListShopBaseOnIndustry({ industryId, limit, page }: GetAllShopByIndustry) {
+        return this.shopTB.find({
+            select: {
+                id: true,
+                asserts: true,
+                author: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone: true,
+                    locations: {
+                        address: true,
+                        country: true,
+                        district: true,
+                        id: true,
+                        street: true,
+                        ward: true,
+                    }
+                },
+                description: true,
+                followers: { id: true },
+                name: true,
+            },
+            where: {
+                industries: {
+                    id: industryId,
+                },
+                status: EShopStatus.Active
+            },
+            skip: (page - 1) * limit,
+            take: limit,
         });
     }
 }

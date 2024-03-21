@@ -51,4 +51,20 @@ export class ShopBaseController extends BaseController {
             responseHandler.errorHandler(res, error);
         }
     };
+
+    async getAllByIndustry(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { industryId, limit, page } = req.query;
+            const result = await this.shopQuery.getListShopBaseOnIndustry({
+                industryId: Number(industryId),
+                limit: Number(limit),
+                page: Number(page),
+            });
+
+            responseHandler.successHandler(res, result);
+        } catch (error) {
+            console.log('>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
+        }
+    }
 }

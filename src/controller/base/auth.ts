@@ -235,9 +235,6 @@ class Auth extends BaseController implements IAuth {
                 '15m'
             );
 
-            console.log('>>>>>>>>>>>>>', resetPasswordToken);
-
-
             mailSender.resetPasswordNotification(resetPasswordToken, email);
 
             responseHandler.successHandler(res, `Success send reset mail to ${email}`);

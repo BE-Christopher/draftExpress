@@ -14,20 +14,21 @@ export type GetIndustryPayload = {
     productName?: string;
 };
 
+const industryTb = AppDataSource.getRepository(Industry);
+
 export class IndustryBaseDataQuery implements IIndustryDataQuery {
-    industryTb = AppDataSource.getRepository(Industry);
 
     getAll(payload: GetIndustryPayload) {
-        return this.industryTb.find({
+        return industryTb.find({
             select: {
                 id: true,
                 name: true,
             },
             where: {
-                name: payload.name ? Like(payload.name) : undefined,
-                products: {
-                    name: payload.productName ? Like(payload.productName) : undefined
-                }
+                name: `%${payload.name}%`,
+                // products: {
+                //     name: `%${payload.productName}%`
+                // }
             },
             skip: (payload.page - 1) * payload.limit,
             take: payload.limit
@@ -35,6 +36,6 @@ export class IndustryBaseDataQuery implements IIndustryDataQuery {
     }
 
     getOne(options: FindOptionsWhere<Industry>) {
-        return this.industryTb.findOne({ where: options });
+        return industryTb.findOne({ where: options });
     }
 }

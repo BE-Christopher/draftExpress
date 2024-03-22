@@ -3,9 +3,9 @@ import responseHandler from "./responseHandler";
 import { IndustryBaseDataQuery } from "../../models/dataQueries/base/Industry.base.dataQueries";
 import { BaseController } from "./base";
 
+const industryQuery = new IndustryBaseDataQuery();
 
 export class IndustryBaseController extends BaseController {
-    industryQuery = new IndustryBaseDataQuery();
 
     constructor() {
         super();
@@ -20,7 +20,7 @@ export class IndustryBaseController extends BaseController {
                 productName
             } = req.query;
 
-            const result = await this.industryQuery.getAll({
+            const result = await industryQuery.getAll({
                 limit: Number(limit),
                 page: Number(page),
                 name: String(name) ?? undefined,

@@ -1,6 +1,7 @@
 import { DeepPartial, DeleteResult, UpdateResult } from "typeorm";
 import { IIndustryDataQuery, IndustryBaseDataQuery } from "../base/Industry.base.dataQueries";
 import { Industry } from "../../entities";
+import AppDataSource from "../../data-source";
 
 interface IAdminIndustryDataQuery extends IIndustryDataQuery {
     addIndustry(payload: DeepPartial<Industry>): Promise<Industry>;
@@ -9,23 +10,24 @@ interface IAdminIndustryDataQuery extends IIndustryDataQuery {
     hardDeleteIndustry(id: number): Promise<DeleteResult>;
 
 }
+const industryTb = AppDataSource.getRepository(Industry);
 
 class AdminIndustryDataQuery extends IndustryBaseDataQuery implements IAdminIndustryDataQuery {
     async addIndustry(payload: DeepPartial<Industry>) {
-        const newIndustry = await this.industryTb.create(payload);
+        const newIndustry = await industryTb.create(payload);
         return newIndustry;
     }
 
     updateIndustry(id: number, payload: DeepPartial<Industry>) {
-        return this.industryTb.update(id, payload);
+        return industryTb.update(id, payload);
     }
 
     softDeleteIndustry(id: number) {
-        return this.industryTb.softDelete(id);
+        return industryTb.softDelete(id);
     }
 
     hardDeleteIndustry(id: number) {
-        return this.industryTb.delete(id);
+        return industryTb.delete(id);
     }
 }
 

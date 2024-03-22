@@ -1,12 +1,10 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { User } from "./User";
+import { BaseEntity } from "./Base";
 
 
 @Entity({ name: 'locations' })
-export class Location {
-    @PrimaryColumn()
-    id: number;
-
+export class Location extends BaseEntity {
     @Column({ nullable: false })
     address: string;
 

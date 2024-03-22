@@ -3,14 +3,15 @@ import {
     Location,
     User
 } from "./entities";
+import configuration from "../config";
 
 const AppDataSource = new DataSource({
     type: "mysql",
-    host: "localhost",
-    port: 3306,
-    username: "root",
-    password: "MysqlJackson",
-    database: "draft_ecommerce",
+    host: configuration.dbHost,
+    port: configuration.dbPort,
+    username: configuration.dbUsername,
+    password: configuration.dbPassword,
+    database: process.env.DB_BASE,
     entities: [
         User,
         Location

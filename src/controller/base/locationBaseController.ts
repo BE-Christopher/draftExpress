@@ -10,22 +10,32 @@ import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
 export default class LocationBaseController extends BaseController {
     locationDataQuery = new LocationDataQuery();
 
-    async getAll(options?: ILocationQuery) {
+    async getAll(req: Request, res: Response, next: NextFunction) {
         try {
+            const {
+                address,
+                country,
+                district,
+                street,
+                ward,
+                userId
+            } = req.query;
             const queryCondition: FindOptionsWhere<Location> = {
-                address: options?.address,
-                country: options?.country,
-                district: options?.district,
-                id: options?.id,
-                street: options?.street,
-                ward: options?.ward,
+                address: String(address) ?? undefined,
+                country: String(country) ?? undefined,
+                district: String(district) ?? undefined,
+                street: String(street) ?? undefined,
+                ward: String(ward) ?? undefined,
                 user: {
-                    id: options?.userId
+                    id: Number(userId) ?? undefined
                 }
             };
-            return await this.locationDataQuery.getAll(queryCondition);
+            const result = await this.locationDataQuery.getAll(queryCondition);
+
+            responseHandler.successHandler(res, result);
         } catch (error) {
-            throw error;
+            console.log('>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
         }
     }
 
@@ -95,11 +105,11 @@ export default class LocationBaseController extends BaseController {
                 district,
                 ward,
                 country,
-                id
             } = req.body;
+            const { id } = req.params;
 
             // check is location existed
-            const currentLocation = await this.locationDataQuery.getOne({ id });
+            const currentLocation = await this.locationDataQuery.getOne({ id: Number(id) });
             if (!currentLocation) {
                 this.errorResponse({ code: 404, error: this.errorMessage.doesExisted(`The location with id: ${id}`) });
             }

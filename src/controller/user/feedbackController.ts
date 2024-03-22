@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { FeedbackBaseController } from "../base/feedbackHandler";
 import responseHandler from "../base/responseHandler";
-import { userFeedbackQuery } from "../../models/dataQueries";
+import { userFeedbackQuery } from "../../models/dataQueries/user";
 import moment = require("moment");
 
 class UserFeedbackController extends FeedbackBaseController {
@@ -35,4 +35,4 @@ class UserFeedbackController extends FeedbackBaseController {
     }
 }
 
-export default new UserFeedbackController();
+export const userFeedbackController = new UserFeedbackController();

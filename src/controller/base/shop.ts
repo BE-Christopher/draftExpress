@@ -43,7 +43,7 @@ export class ShopBaseController extends BaseController {
 
     async getOne(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id } = req.query;
+            const { id } = req.params;
             const result = await this.shopQuery.getOneById(Number(id));
             responseHandler.successHandler(res, result);
         } catch (error) {
@@ -54,7 +54,8 @@ export class ShopBaseController extends BaseController {
 
     async getAllByIndustry(req: Request, res: Response, next: NextFunction) {
         try {
-            const { industryId, limit, page } = req.query;
+            const { industryId } = req.params
+            const { limit, page } = req.query;
             const result = await this.shopQuery.getListShopBaseOnIndustry({
                 industryId: Number(industryId),
                 limit: Number(limit),

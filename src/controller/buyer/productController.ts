@@ -77,10 +77,8 @@ class BuyerProductController extends ProductBaseController {
 
     async deleteProduct(req: Request, res: Response, next: NextFunction) {
         try {
-            const {
-                id,
-                type
-            } = req.body;
+            const { type } = req.body;
+            const { id } = req.params
 
             // check type
             if (!(String(type) in ProductDeleteType)) {
@@ -91,9 +89,9 @@ class BuyerProductController extends ProductBaseController {
             }
 
             if (String(type === ProductDeleteType.Soft)) {
-                await this.productQuery.disableProduct(id);
+                await this.productQuery.disableProduct(Number(id));
             } else {
-                await this.productQuery.deleteProduct(id);
+                await this.productQuery.deleteProduct(Number(id));
             }
 
             responseHandler.successHandler(res, `Success ${type} delete product with id: ${id}`);
@@ -112,8 +110,8 @@ class BuyerProductController extends ProductBaseController {
                 unit,
                 sold,
                 productOptionList,
-                id,
             } = req.body;
+            const { id } = req.params
 
             // data field checking
             if (!(String(unit) in ECurrencyUnit)) {
@@ -266,4 +264,4 @@ class BuyerProductController extends ProductBaseController {
     }
 }
 
-export default new BuyerProductController();
+export const buyerProductController = new BuyerProductController();

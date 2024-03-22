@@ -54,4 +54,4 @@ class UserShopController extends ShopBaseController {
     }
 }
 
-export default new UserShopController();
+export const userShopController = new UserShopController();

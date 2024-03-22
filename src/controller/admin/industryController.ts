@@ -28,9 +28,10 @@ class AdminIndustryController extends IndustryBaseController {
 
     async update(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, id } = req.body;
+            const { name } = req.body;
+            const { id } = req.params;
 
-            await this.industryQuery.updateIndustry(id, {
+            await this.industryQuery.updateIndustry(Number(id), {
                 name
             });
 
@@ -70,4 +71,4 @@ class AdminIndustryController extends IndustryBaseController {
 }
 
 
-export default new AdminIndustryController();
+export const adminIndustryController = new AdminIndustryController();

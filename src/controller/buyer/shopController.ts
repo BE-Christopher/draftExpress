@@ -22,15 +22,15 @@ class BuyerShopController extends ShopBaseController {
     // WIP
     async updateMyStore(req: Request, res: Response, next: NextFunction) {
         try {
+            const { id } = req.params;
             const {
-                id,
                 description,
                 name,
                 industries
             } = req.body;
             const currentUser = req?.user as any;
 
-            const currentStore = await this.shopQuery.getOneById(id);
+            const currentStore = await this.shopQuery.getOneById(Number(id));
             // check store
             if (!currentStore) {
                 this.errorResponse({
@@ -46,7 +46,7 @@ class BuyerShopController extends ShopBaseController {
             }
 
             // update general shop data
-            await this.shopQuery.updateMyShop(id, {
+            await this.shopQuery.updateMyShop(Number(id), {
                 description,
                 name,
             });
@@ -79,8 +79,8 @@ class BuyerShopController extends ShopBaseController {
 
     async closeOrDisableShop(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id, type } = req.body;
-
+            const { type } = req.body;
+            const { id } = req.params
             // check type
             if (!(String(type) in EShopStatus)) {
                 this.errorResponse({
@@ -99,9 +99,9 @@ class BuyerShopController extends ShopBaseController {
 
             // handler update
             if (String(type) === EShopStatus.Pause) {
-                await this.shopQuery.disableMyShop(id);
+                await this.shopQuery.disableMyShop(Number(id));
             } else {
-                await this.shopQuery.closeMyShop(id);
+                await this.shopQuery.closeMyShop(Number(id));
             }
 
             responseHandler.successHandler(res, `Success ${type} your store`);
@@ -132,7 +132,7 @@ class BuyerShopController extends ShopBaseController {
             responseHandler.errorHandler(res, error);
         }
     }
-    
+
     async removeNewIndustry(req: Request, res: Response, next: NextFunction) {
         try {
             const { shopId, industries } = req.body;
@@ -148,7 +148,7 @@ class BuyerShopController extends ShopBaseController {
 
     async getListIndustryInMyStore(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id } = req.query;
+            const { id } = req.params;
 
             const listIndustries = await this.shopQuery.getListIndustryInMyStore(Number(id));
 
@@ -160,4 +160,4 @@ class BuyerShopController extends ShopBaseController {
     }
 }
 
-export default new BuyerShopController();
+export const buyerShopController = new BuyerShopController();

@@ -13,10 +13,8 @@ class AdminShopController extends ShopBaseController {
 
     async disableOrHardDeleteShop(req: Request, res: Response, next: NextFunction) {
         try {
-            const {
-                id,
-                type
-            } = req.body;
+            const { type } = req.body;
+            const { id } = req.params;
 
             if (!(String(type) in AdminDeleteShop)) {
                 this.errorResponse({
@@ -26,9 +24,9 @@ class AdminShopController extends ShopBaseController {
             }
 
             if (String(type) === AdminDeleteShop.Disable) {
-                await this.shopQuery.disableShop(id);
+                await this.shopQuery.disableShop(Number(id));
             } else {
-                await this.shopQuery.hardDelete(id);
+                await this.shopQuery.hardDelete(Number(id));
             }
 
             responseHandler.successHandler(res, `Success ${type} this shop`);
@@ -39,4 +37,4 @@ class AdminShopController extends ShopBaseController {
     }
 }
 
-export default new AdminShopController();
+export const adminShopController = new AdminShopController();

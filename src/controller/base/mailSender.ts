@@ -3,19 +3,22 @@ import config from '../../config';
 import Mail = require('nodemailer/lib/mailer');
 import { IUserVerifyData } from './auth';
 
+const transport = nodeMailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: config.mailUser,
+        pass: config.mailPassword
+    },
+    secure: false,
+    tls: { rejectUnauthorized: false }
+});
+
 class MailSender {
-    transport = nodeMailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: config.mailUser,
-            pass: config.mailPassword
-        }
-    });
 
     constructor() { }
 
     private transportSendmail(mailOptions: Mail.Options, logging: string) {
-        this.transport.sendMail(mailOptions, (err, info) => {
+        transport.sendMail(mailOptions, (err, info) => {
             if (err) {
                 throw err;
             } else {
@@ -30,7 +33,7 @@ class MailSender {
                 from: config.mailUser,
                 to: userData.email,
                 subject: 'Verify your account',
-                text: 'Please verify your account with this link: \n' + verifyToken
+                text: 'Please verify your account with this link: \n' + `${config.appDomain}${config.resetPasswordPath}?token=${verifyToken}`
             };
 
             this.transportSendmail(mailOptions, `Success send verification mail to ${userData.email}`);

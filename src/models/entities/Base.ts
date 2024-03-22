@@ -14,11 +14,11 @@ export class BaseEntity {
 
     @BeforeInsert()
     insertCreated() {
-        this.createdAt = moment('YYYY-MM-DD').toDate();
+        this.createdAt = new Date();
     }
 
     @BeforeUpdate()
     insertUpdated() {
-        this.updatedAt = moment('YYYY-MM-DD').toDate();
+        this.updatedAt = new Date();
     }
 }

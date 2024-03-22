@@ -50,4 +50,41 @@ export default class UserDataQuery implements IUserDataQuery {
 
         return newUser;
     }
+
+    getUserInfo(user: User) {
+        const {
+            id,
+            email,
+            personalId,
+            avatar,
+            age,
+            birthDate,
+            gender,
+            isDeleted,
+            isVerified,
+            name,
+            phone,
+            role,
+            locations,
+            shopFollowing,
+        } = user;
+
+
+        return {
+            id,
+            email,
+            personalId,
+            avatar,
+            age,
+            birthDate,
+            gender,
+            isDeleted,
+            isVerified,
+            name,
+            phone,
+            role,
+            locations,
+            shopFollowing,
+        };
+    }
 }

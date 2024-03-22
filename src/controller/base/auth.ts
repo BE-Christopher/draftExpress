@@ -20,57 +20,60 @@ export type IUserVerifyData = {
 };
 
 
-const jwtRenderToken = (data: any) => {
-    console.log('>>>>>>>>>>>>>>>>');
-
-    const expiresIn = '3h';
+const jwtRenderToken = (data: any, expiresInConfig?: string) => {
+    const expiresIn = expiresInConfig ?? '3h';
     return jwt.sign(data, config.jwtSecretKey, { expiresIn });
 };
 const userQuery = new UserDataQuery();
 class Auth extends BaseController implements IAuth {
-    // async login(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const {
-    //             email,
-    //             password
-    //         } = req.body;
+    async login(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {
+                email,
+                password
+            } = req.body;
 
-    //         // case null email or password
-    //         if (!email || !password) {
-    //             this.errorResponse({
-    //                 code: 403,
-    //                 error: {
-    //                     email: this.errorMessage.required(email),
-    //                     password: this.errorMessage.required(password)
-    //                 }
-    //             });
-    //         }
+            // case null email or password
+            if (!email || !password) {
+                this.errorResponse({
+                    code: 403,
+                    error: {
+                        email: this.errorMessage.required(email),
+                        password: this.errorMessage.required(password)
+                    }
+                });
+            }
 
-    //         const currentUser = await this.userQuery.getOne({ options: { email } });
+            const currentUser = await userQuery.getOne({ options: { email } });
 
-    //         // case invalid user or deleted user
-    //         if (!currentUser || currentUser.isDeleted) {
-    //             this.errorResponse({
-    //                 code: 403,
-    //                 error: this.errorMessage.isDeleted(`The user with email ${email}`)
-    //             });
-    //         }
+            // case invalid user or deleted user
+            if (!currentUser || currentUser.isDeleted) {
+                this.errorResponse({
+                    code: 403,
+                    error: this.errorMessage.isDeleted(`The user with email ${email}`)
+                });
+            }
 
-    //         //password checking
-    //         const isMatch = await bcrypt.compare(password, String(currentUser?.password));
-    //         if (!isMatch) {
-    //             this.errorResponse({
-    //                 code: 401,
-    //                 error: 'Unauthorize'
-    //             });
-    //         }
+            //password checking
+            const isMatch = await bcrypt.compare(password, String(currentUser?.password));
+            if (!isMatch) {
+                this.errorResponse({
+                    code: 401,
+                    error: 'Unauthorize'
+                });
+            }
 
-    //         responseHandler.successHandler(res, this.jwtRenderToken(currentUser as User));
-    //     } catch (error) {
-    //         console.log('>>>>>>>>>>>>>>>', error);
-    //         responseHandler.errorHandler(res, error);
-    //     }
-    // }
+            const userData = userQuery.getUserInfo((currentUser as User));
+
+            responseHandler.successHandler(res, {
+                token: jwtRenderToken(userData, '1d'),
+                userData
+            });
+        } catch (error) {
+            console.log('>>>>>>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
+        }
+    }
 
     async register(req: Request, res: Response, next: NextFunction) {
         try {
@@ -174,58 +177,75 @@ class Auth extends BaseController implements IAuth {
         }
     }
 
-    // async resetPassword(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { token } = req.query;
-    //         const { newPassword } = req.body;
-    //         // check token is null
-    //         if (!token) {
-    //             this.errorResponse({
-    //                 code: 401,
-    //                 error: this.errorMessage.required(token)
-    //             });
-    //         }
-    //         const tokenData: JwtPayload = jwtDecode(String(token));
-    //         console.log("🚀 ~ Auth ~ resetPassword ~ tokenData:", tokenData);
-    //         // const newPasswordDecrypt = await bcrypt.hash(newPassword, config.passwordSalt);
-    //         // await this.userQuery.update({
-    //         //     id: Number(tokenData.),
-    //         //     updatingData: {
-    //         //         password: newPasswordDecrypt
-    //         //     }
-    //         // });
-    //         responseHandler.successHandler(res, `Success reset password`);
-    //     } catch (error) {
-    //         console.log('>>>>>>>>>>>>>>>', error);
-    //         responseHandler.errorHandler(res, error);
-    //     }
-    // }
+    async resetPassword(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { token } = req.query;
+            const { newPassword } = req.body;
+            // check token is null
+            if (!token) {
+                this.errorResponse({
+                    code: 401,
+                    error: this.errorMessage.required(token)
+                });
+            }
 
-    // async forgotPassword(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { email } = req.body;
-    //         const existedUser = await this.userQuery.getOne({ options: { email } });
-    //         if (!existedUser) {
-    //             this.errorResponse({
-    //                 code: 404,
-    //                 error: this.errorMessage.doesExisted(`The user with email ${email}`)
-    //             });
-    //         }
+            // token checking
+            const verifiedToken: any = await jwt.verify(String(token), config.jwtSecretKey);
+            if (!verifiedToken) {
+                this.errorResponse({
+                    code: 401,
+                    error: 'Unauthorize'
+                });
+            }
 
-    //         const resetPasswordToken = this.jwtRenderToken({
-    //             email: existedUser?.email,
-    //             role: existedUser?.role,
-    //             id: existedUser?.id
-    //         });
+            const newPasswordHashed = await bcrypt.hash(newPassword, config.passwordSalt);
 
-    //         mailSender.resetPasswordNotification(resetPasswordToken, email);
+            // update new password
+            await userQuery.update({
+                id: verifiedToken.id,
+                updatingData: {
+                    password: newPasswordHashed,
+                }
+            });
 
-    //         responseHandler.successHandler(res, `Success send reset mail to ${email}`);
-    //     } catch (error) {
-    //         console.log('>>>>>>>>>>>>>>>', error);
-    //         responseHandler.errorHandler(res, error);
-    //     }
-    // }
+            responseHandler.successHandler(res, `Success reset password`);
+        } catch (error) {
+            console.log('>>>>>>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
+        }
+    }
+
+    async forgotPassword(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.body;
+            const existedUser = await userQuery.getOne({ options: { email } });
+            if (!existedUser || existedUser.isDeleted) {
+                this.errorResponse({
+                    code: 404,
+                    error: this.errorMessage.doesExisted(`The user with email ${email}`)
+                });
+            }
+
+            const resetPasswordToken = jwtRenderToken(
+                {
+                    email: existedUser?.email,
+                    role: existedUser?.role,
+                    id: existedUser?.id
+                },
+                '15m'
+            );
+
+            console.log('>>>>>>>>>>>>>', resetPasswordToken);
+
+
+            mailSender.resetPasswordNotification(resetPasswordToken, email);
+
+            responseHandler.successHandler(res, `Success send reset mail to ${email}`);
+        } catch (error) {
+            console.log('>>>>>>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
+        }
+    }
 }
 
 export const auth = new Auth();

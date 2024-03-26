@@ -15,6 +15,7 @@ const industryTb = AppDataSource.getRepository(Industry);
 class AdminIndustryDataQuery extends IndustryBaseDataQuery implements IAdminIndustryDataQuery {
     async addIndustry(payload: DeepPartial<Industry>) {
         const newIndustry = await industryTb.create(payload);
+        await industryTb.save(newIndustry);
         return newIndustry;
     }
 

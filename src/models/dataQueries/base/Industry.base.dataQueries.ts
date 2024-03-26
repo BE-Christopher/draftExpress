@@ -25,7 +25,7 @@ export class IndustryBaseDataQuery implements IIndustryDataQuery {
                 name: true,
             },
             where: {
-                name: `%${payload.name}%`,
+                name: payload?.name ? `%${payload.name}%` : undefined,
                 // products: {
                 //     name: `%${payload.productName}%`
                 // }

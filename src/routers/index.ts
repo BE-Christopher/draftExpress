@@ -39,7 +39,7 @@ class IRouters implements BaseRouter {
 
         // admin role
         router.use('/admin/industry', authentication.authenticate, checkUserRole.isAdmin, adminIndustryRouter.getRoutes());
-        router.use('/admin/industry', authentication.authenticate, checkUserRole.isAdmin, adminShopRouter.getRoutes());
+        router.use('/admin/shop', authentication.authenticate, checkUserRole.isAdmin, adminShopRouter.getRoutes());
         router.use('/admin/product', authentication.authenticate, checkUserRole.isAdmin, adminProductRouter.getRoutes());
 
         return router;

@@ -8,14 +8,15 @@ export enum DeleteIndustryPayload {
     Soft = 'Soft'
 }
 
+const industryQuery = adminIndustryDataQuery;
+
 class AdminIndustryController extends IndustryBaseController {
-    industryQuery = adminIndustryDataQuery;
 
     async create(req: Request, res: Response, next: NextFunction) {
         try {
             const { name } = req.body;
 
-            const newIndustry = await this.industryQuery.addIndustry({
+            const newIndustry = await industryQuery.addIndustry({
                 name
             });
 
@@ -31,7 +32,7 @@ class AdminIndustryController extends IndustryBaseController {
             const { name } = req.body;
             const { id } = req.params;
 
-            await this.industryQuery.updateIndustry(Number(id), {
+            await industryQuery.updateIndustry(Number(id), {
                 name
             });
 

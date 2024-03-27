@@ -19,7 +19,6 @@ export interface IUserDataQuery {
     create(payload: DeepPartial<User>): Promise<User>;
 }
 
-
 export default class UserDataQuery implements IUserDataQuery {
     userTb = AppDataSource.getRepository(User);
 

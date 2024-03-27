@@ -1,20 +1,21 @@
-import { UpdateResult } from "typeorm";
+import { DeepPartial, UpdateResult } from "typeorm";
 import { EShopStatus } from "../../../interfaces";
 import ShopeBaseDataQuery, { IShopDataQuery } from "../base/Shop.base.dataQueries";
+import { Shop } from "../../entities";
+import AppDataSource from "../../data-source";
 
 interface IUserShopDataQuery extends IShopDataQuery {
-    registerMyShop(id: number): Promise<UpdateResult>;
+    registerMyShop(payload: DeepPartial<Shop>): Promise<Shop>;
 }
 
-class UserShopDataQuery extends ShopeBaseDataQuery implements IUserShopDataQuery {
-    constructor() {
-        super();
-    }
+const shopTB = AppDataSource.getRepository(Shop);
 
-    registerMyShop(id: number) {
-        return this.shopTB.update(id, {
-            status: EShopStatus.Active
-        });
+class UserShopDataQuery extends ShopeBaseDataQuery implements IUserShopDataQuery {
+    async registerMyShop(payload: DeepPartial<Shop>) {
+        const newShop = await shopTB.create(payload);
+        await shopTB.save(newShop);
+
+        return newShop;
     }
 }
 

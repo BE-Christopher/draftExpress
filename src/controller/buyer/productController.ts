@@ -14,7 +14,6 @@ export type ProductAssertData = {
 export type ProductOptionsData = {
     type: any[],
     isAvailable: boolean;
-    inventory: number;
 };
 
 export enum ProductDeleteType {

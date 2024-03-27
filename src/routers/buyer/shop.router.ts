@@ -16,8 +16,8 @@ class BuyerShopRouter implements BaseRouter {
         router.put('/:id', updateMyStore);
         router.delete('/:id', closeOrDisableShop);
         router.get('/:id/industry-list', getListIndustryInMyStore);
-        router.post('/add-industry', importNewIndustry);
-        router.delete('/remove-industry', removeNewIndustry);
+        router.post('/:id/add-industry', importNewIndustry);
+        // router.delete('/remove-industry', removeNewIndustry);
 
         return router;
     };

@@ -3,7 +3,7 @@ import AppDataSource from "../../data-source";
 import { Shop } from "../../entities";
 import { } from 'typeorm';
 export interface IShopDataQuery {
-    getAll(payload: ShopGetAllPayload): Promise<Shop[]>;
+    getAll(payload: ShopGetAllPayload): Promise<[Shop[], number]>;
     getOneById(id: number): Promise<Shop | null>;
 }
 
@@ -69,15 +69,13 @@ export const shopShouldGettingFields = {
             isAvailable: true,
             type: true
         },
-        inventory: true,
     }
 };
-
+const shopTB = AppDataSource.getRepository(Shop);
 export default class ShopeBaseDataQuery implements IShopDataQuery {
-    shopTB = AppDataSource.getRepository(Shop);
 
     getAll(payload: ShopGetAllPayload) {
-        return this.shopTB.find(
+        return shopTB.findAndCount(
             {
                 select: shopShouldGettingFields,
                 where: {
@@ -93,13 +91,7 @@ export default class ShopeBaseDataQuery implements IShopDataQuery {
                     },
                 },
                 relations: {
-                    author: {
-                        locations: true
-                    },
-                    industries: true,
-                    followers: true,
-                    products: true,
-                    asserts: true,
+                    author: true,
                 },
                 skip: (payload.page - 1) * payload.limit,
                 take: payload.limit,
@@ -108,24 +100,17 @@ export default class ShopeBaseDataQuery implements IShopDataQuery {
     }
 
     getOneById(id: number) {
-        return this.shopTB.findOne({
-            select: shopShouldGettingFields,
+        return shopTB.findOne({
             where: { id },
             relations: {
-                author: {
-                    locations: true
-                },
-                industries: true,
-                followers: true,
-                products: true,
-                asserts: true,
+                author: true,
             },
 
         });
     }
 
     getListShopBaseOnIndustry({ industryId, limit, page }: GetAllShopByIndustry) {
-        return this.shopTB.find({
+        return shopTB.find({
             select: {
                 id: true,
                 asserts: true,

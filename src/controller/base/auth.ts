@@ -1,15 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import responseHandler, { ErrorMessage, IErrorPayload } from "./responseHandler";
-import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
-import { BaseController } from "./base";
-import { User } from "../../models/entities";
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
+import { NextFunction, Request, Response } from "express";
+import * as jwt from 'jsonwebtoken';
 import config from "../../config";
-import moment = require("moment");
+import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
+import { User } from "../../models/entities";
+import { BaseController } from "./base";
 import mailSender from "./mailSender";
-import * as crypto from 'crypto';
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import responseHandler from "./responseHandler";
+import moment = require("moment");
 
 interface IAuth { }
 
@@ -133,7 +131,6 @@ class Auth extends BaseController implements IAuth {
                 role: newUser.role
             });
 
-            console.log("🚀 ~ Auth ~ register ~ verifyToken:", verifyToken);
             await mailSender.registerNotification(
                 {
                     id: newUser.id,

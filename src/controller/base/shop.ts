@@ -3,14 +3,9 @@ import { BaseController } from "./base";
 import responseHandler from "./responseHandler";
 import ShopeBaseDataQuery from "../../models/dataQueries/base/Shop.base.dataQueries";
 
+const shopQuery = new ShopeBaseDataQuery();
+
 export class ShopBaseController extends BaseController {
-    shopQuery: ShopeBaseDataQuery;
-
-    constructor() {
-        super();
-        this.shopQuery = new ShopeBaseDataQuery();
-    }
-
     async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const {
@@ -21,7 +16,7 @@ export class ShopBaseController extends BaseController {
                 ward,
                 country,
             } = req.query;
-            const result = await this.shopQuery.getAll({
+            const [shops, totalShops] = await shopQuery.getAll({
                 limit: Number(limit),
                 page: Number(page),
                 industries: industries ? Number(industries) : undefined,
@@ -31,9 +26,13 @@ export class ShopBaseController extends BaseController {
                     ward: ward ? String(ward) : undefined,
                 }
             });
+            // calculate total page
+            const totalPage = Number(totalShops) % Number(limit);
+
             responseHandler.successHandler(res, {
-                result: result,
-                page: Number(page) + 1
+                shops,
+                totalPage,
+                currentPage: Number(page)
             });
         } catch (error) {
             console.log('>>>>>>>>>>>', error);
@@ -44,7 +43,7 @@ export class ShopBaseController extends BaseController {
     async getOne(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const result = await this.shopQuery.getOneById(Number(id));
+            const result = await shopQuery.getOneById(Number(id));
             responseHandler.successHandler(res, result);
         } catch (error) {
             console.log('>>>>>>>>>>>', error);
@@ -54,9 +53,9 @@ export class ShopBaseController extends BaseController {
 
     async getAllByIndustry(req: Request, res: Response, next: NextFunction) {
         try {
-            const { industryId } = req.params
+            const { industryId } = req.params;
             const { limit, page } = req.query;
-            const result = await this.shopQuery.getListShopBaseOnIndustry({
+            const result = await shopQuery.getListShopBaseOnIndustry({
                 industryId: Number(industryId),
                 limit: Number(limit),
                 page: Number(page),

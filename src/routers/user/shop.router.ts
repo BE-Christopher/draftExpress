@@ -8,8 +8,8 @@ class UserShopRouter implements BaseRouter {
         const { registerMyShop } = userShopController;
 
         router.post('/', registerMyShop);
-
         return router;
     };
+
 }
 export const userShopRouter = new UserShopRouter();

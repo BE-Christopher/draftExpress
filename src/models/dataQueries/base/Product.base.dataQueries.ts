@@ -147,7 +147,6 @@ export class ProductBaseDataQuery implements IProductBaseDataQuery {
                     id: true,
                     isAvailable: true,
                     type: true,
-                    inventory: true,
                 },
                 asserts: {
                     id: true,

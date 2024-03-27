@@ -8,7 +8,7 @@ export class Industry extends BaseEntity {
     @Column({ nullable: false })
     name: string;
 
-    @ManyToMany(() => Shop)
+    @ManyToMany(() => Shop, shop => shop.industries)
     shops: Shop[];
 
     @OneToMany(() => Product, product => product.id)

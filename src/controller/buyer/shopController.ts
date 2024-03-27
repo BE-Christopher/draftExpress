@@ -1,36 +1,30 @@
-import { ShopBaseController } from "../base/shop";
-import { buyerIndustryDataQuery, buyerShopDataQuery } from '../../models/dataQueries/buyer';
 import { NextFunction, Request, Response } from "express";
-import responseHandler from "../base/responseHandler";
-import UserBuyerDataQueries from "../../models/dataQueries/buyer/User.buyer.dataQueries";
 import { EShopStatus, EUserRole } from "../../interfaces";
-import * as blueBirdPromise from 'bluebird';
-import { Industry } from "../../models/entities";
+import { buyerIndustryDataQuery, buyerShopDataQuery } from '../../models/dataQueries/buyer';
+import UserBuyerDataQueries from "../../models/dataQueries/buyer/User.buyer.dataQueries";
+import { Industry, User } from "../../models/entities";
+import responseHandler from "../base/responseHandler";
+import { ShopBaseController } from "../base/shop";
 
-type IndustryUpdatingData = {
-    id: number,
-    data?: any;
-};
+
+const shopQuery = buyerShopDataQuery;
 
 class BuyerShopController extends ShopBaseController {
-    shopQuery = buyerShopDataQuery;
-
-    constructor() {
-        super();
-    }
 
     // WIP
     async updateMyStore(req: Request, res: Response, next: NextFunction) {
+        console.log('>>>>>>>>>>>>>>');
+
         try {
             const { id } = req.params;
             const {
                 description,
                 name,
-                industries
             } = req.body;
-            const currentUser = req?.user as any;
 
-            const currentStore = await this.shopQuery.getOneById(Number(id));
+            const currentUser = req?.user as User;
+
+            const currentStore = await shopQuery.getOneById(Number(id));
             // check store
             if (!currentStore) {
                 this.errorResponse({
@@ -45,32 +39,14 @@ class BuyerShopController extends ShopBaseController {
                 });
             }
 
+
             // update general shop data
-            await this.shopQuery.updateMyShop(Number(id), {
+            await shopQuery.updateMyShop(Number(id), {
                 description,
                 name,
             });
 
-            // update shop industries
-            if (industries) {
-                const {
-                    industryUpdate,
-                    industryDelete
-                } = industries;
-
-                Array(industryUpdate).length && await blueBirdPromise.mapSeries(industryUpdate as IndustryUpdatingData[], async (item) => {
-                    await this.shopQuery.updateMyShop(Number(item?.id), item?.data);
-                });
-                // will write late
-                // Array(industryDelete).length && await blueBirdPromise.mapSeries(industryDelete as IndustryUpdatingData, async (item) => {
-                //     // await
-                // })
-            }
-
-            // update shop asserts
-            // will writing late
-
-            responseHandler.successHandler(res, {});
+            responseHandler.successHandler(res, `Success update your store`);
         } catch (error) {
             console.log('><>>>>>>>>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);
@@ -80,7 +56,7 @@ class BuyerShopController extends ShopBaseController {
     async closeOrDisableShop(req: Request, res: Response, next: NextFunction) {
         try {
             const { type } = req.body;
-            const { id } = req.params
+            const { id } = req.params;
             // check type
             if (!(String(type) in EShopStatus)) {
                 this.errorResponse({
@@ -99,9 +75,9 @@ class BuyerShopController extends ShopBaseController {
 
             // handler update
             if (String(type) === EShopStatus.Pause) {
-                await this.shopQuery.disableMyShop(Number(id));
+                await shopQuery.disableMyShop(Number(id));
             } else {
-                await this.shopQuery.closeMyShop(Number(id));
+                await shopQuery.closeMyShop(Number(id));
             }
 
             responseHandler.successHandler(res, `Success ${type} your store`);
@@ -113,7 +89,8 @@ class BuyerShopController extends ShopBaseController {
 
     async importNewIndustry(req: Request, res: Response, next: NextFunction) {
         try {
-            const { shopId, industryId } = req.body;
+            const { industryId } = req.body;
+            const { id } = req.params
 
             const importingIndustry = await buyerIndustryDataQuery.getOne({ id: Number(industryId) });
             // check is existed industry
@@ -124,11 +101,11 @@ class BuyerShopController extends ShopBaseController {
                 });
             }
 
-            await this.shopQuery.addNewIndustryForMyStore(Number(shopId), importingIndustry as Industry);
+            await shopQuery.addNewIndustryForMyStore(Number(id), importingIndustry as Industry);
 
             responseHandler.successHandler(res, `Success add new industry with id: ${industryId} into your store`);
         } catch (error) {
-            console.log('>>>>>>>>>');
+            console.log('>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);
         }
     }
@@ -137,7 +114,7 @@ class BuyerShopController extends ShopBaseController {
         try {
             const { shopId, industries } = req.body;
 
-            await this.shopQuery.removeIndustries(industries, Number(shopId));
+            await shopQuery.removeIndustries(industries, Number(shopId));
 
             responseHandler.successHandler(res, `Success remove all industries for my store`);
         } catch (error) {
@@ -150,11 +127,11 @@ class BuyerShopController extends ShopBaseController {
         try {
             const { id } = req.params;
 
-            const listIndustries = await this.shopQuery.getListIndustryInMyStore(Number(id));
+            const listIndustries = await shopQuery.getListIndustryInMyStore(Number(id));
 
             responseHandler.successHandler(res, listIndustries);
         } catch (error) {
-            console.log('>>>>>>>>>');
+            console.log('>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);
         }
     }

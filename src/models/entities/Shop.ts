@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import { BaseEntity } from "./Base";
 import { User } from "./User";
 import { Industry } from "./Industry";
@@ -14,10 +14,11 @@ export class Shop extends BaseEntity {
     @Column({ nullable: false })
     description: string;
 
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => User, user => user.shop)
     author: User;
 
-    @ManyToMany(() => Industry, { nullable: false, cascade: true })
+    @ManyToMany(() => Industry, { nullable: true, cascade: true })
+    @JoinTable()
     industries: Industry[];
 
     @Column({ type: 'enum', enum: EShopStatus, default: EShopStatus.Inactive })

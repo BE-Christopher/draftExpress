@@ -3,6 +3,7 @@ import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import routers from './routers';
 import AppDataSource from './models/data-source';
+import { realTimeServer } from './controller/realTime';
 
 const app = express();
 const port = 3009;
@@ -21,6 +22,8 @@ AppDataSource.initialize()
         console.error("Error during Data Source initialization", err);
     });
 
+// init real-time service
+realTimeServer.init();
 
 app.get('/', (req, res) => {
     res.send('Welcome to draftExpress!');

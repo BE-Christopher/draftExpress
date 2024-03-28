@@ -40,7 +40,6 @@ class BuyerShopDataQuery extends ShopeBaseDataQuery implements IBuyerShopDataQue
             },
             relations: { industries: true }
         });
-        console.log("🚀 ~ BuyerShopDataQuery ~ addNewIndustryForMyStore ~ currentShop:", currentShop);
 
         currentShop?.industries.push(industry);
 
@@ -77,17 +76,20 @@ class BuyerShopDataQuery extends ShopeBaseDataQuery implements IBuyerShopDataQue
     }
 
     async removeIndustries(industries: number[], shopId: number) {
-        const currentShopIndustries = await shopTB.find({
-            where: { id: shopId }
+        const currentShopIndustries = await shopTB.findOne({
+            where: { id: shopId },
+            relations: { industries: true }
         });
-        const removedShopIndustries = currentShopIndustries.filter((item) => !(item.id in industries));
 
-        // WIP - remove all products has removed industry
-
-        return await shopTB.update(shopId, {
+        const removingShopIndustries = currentShopIndustries?.industries.filter((item) => item.id in industries);
+        await shopTB.save({
             ...currentShopIndustries,
-            industries: removedShopIndustries,
+            industries: removingShopIndustries
         });
+
+        // wip - remove all products
+
+        return currentShopIndustries;
     }
 }
 

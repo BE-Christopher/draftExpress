@@ -90,7 +90,7 @@ class BuyerShopController extends ShopBaseController {
     async importNewIndustry(req: Request, res: Response, next: NextFunction) {
         try {
             const { industryId } = req.body;
-            const { id } = req.params
+            const { id } = req.params;
 
             const importingIndustry = await buyerIndustryDataQuery.getOne({ id: Number(industryId) });
             // check is existed industry
@@ -112,9 +112,9 @@ class BuyerShopController extends ShopBaseController {
 
     async removeNewIndustry(req: Request, res: Response, next: NextFunction) {
         try {
-            const { shopId, industries } = req.body;
-
-            await shopQuery.removeIndustries(industries, Number(shopId));
+            const { industries } = req.body;
+            const { id } = req.params;
+            await shopQuery.removeIndustries(industries, Number(id));
 
             responseHandler.successHandler(res, `Success remove all industries for my store`);
         } catch (error) {

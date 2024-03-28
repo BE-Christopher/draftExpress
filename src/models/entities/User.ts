@@ -49,7 +49,7 @@ export class User extends BaseEntity {
     @JoinColumn()
     shop: Shop;
 
-    @ManyToMany(() => Shop)
+    @ManyToMany(() => Shop, shop => shop.followers)
     shopFollowing: Shop[];
 
     @OneToMany(() => Feedback, feedback => feedback.id, { nullable: true, cascade: true })

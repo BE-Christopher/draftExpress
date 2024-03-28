@@ -105,7 +105,6 @@ export default class ShopeBaseDataQuery implements IShopDataQuery {
             relations: {
                 author: true,
             },
-
         });
     }
 

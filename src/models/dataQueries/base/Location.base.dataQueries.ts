@@ -14,7 +14,7 @@ export default class LocationDataQuery implements ILocationDataQuery {
     constructor() { }
 
     getAll(options?: FindOptionsWhere<Location>) {
-        return locationTb.find({
+       return locationTb.find({
             where: options,
             relations: {
                 user: true

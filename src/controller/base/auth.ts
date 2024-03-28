@@ -1,15 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import responseHandler, { ErrorMessage, IErrorPayload } from "./responseHandler";
-import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
-import { BaseController } from "./base";
-import { User } from "../../models/entities";
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
+import { NextFunction, Request, Response } from "express";
+import * as jwt from 'jsonwebtoken';
 import config from "../../config";
-import moment = require("moment");
+import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
+import { User } from "../../models/entities";
+import { BaseController } from "./base";
 import mailSender from "./mailSender";
-import * as crypto from 'crypto';
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import responseHandler from "./responseHandler";
+import moment = require("moment");
 
 interface IAuth { }
 
@@ -19,20 +17,13 @@ export type IUserVerifyData = {
     role: string;
 };
 
-const secretKey = 'e05a8d484a5a6d5ab76dbb287e09ff4d89a7d8c196fbb9c9b6d9d1a9a58d16d2';
+
+const jwtRenderToken = (data: any, expiresInConfig?: string) => {
+    const expiresIn = expiresInConfig ?? '3h';
+    return jwt.sign(data, config.jwtSecretKey, { expiresIn });
+};
+const userQuery = new UserDataQuery();
 class Auth extends BaseController implements IAuth {
-    userQuery;
-
-    constructor() {
-        super();
-        this.userQuery = new UserDataQuery();
-    }
-
-    private jwtRenderToken(data: any) {
-        const expiresIn = '3h';
-        return jwt.sign(data, secretKey, { expiresIn });
-    }
-
     async login(req: Request, res: Response, next: NextFunction) {
         try {
             const {
@@ -51,7 +42,7 @@ class Auth extends BaseController implements IAuth {
                 });
             }
 
-            const currentUser = await this.userQuery.getOne({ options: { email } });
+            const currentUser = await userQuery.getOne({ options: { email } });
 
             // case invalid user or deleted user
             if (!currentUser || currentUser.isDeleted) {
@@ -70,7 +61,12 @@ class Auth extends BaseController implements IAuth {
                 });
             }
 
-            responseHandler.successHandler(res, this.jwtRenderToken(currentUser as User));
+            const userData = userQuery.getUserInfo((currentUser as User));
+
+            responseHandler.successHandler(res, {
+                token: jwtRenderToken(userData, '1d'),
+                userData
+            });
         } catch (error) {
             console.log('>>>>>>>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);
@@ -103,7 +99,7 @@ class Auth extends BaseController implements IAuth {
                 });
             }
 
-            const existedUser = await this.userQuery.getOne({ options: { email } });
+            const existedUser = await userQuery.getOne({ options: { email } });
             if (existedUser) {
                 this.errorResponse({
                     code: 400,
@@ -116,9 +112,9 @@ class Auth extends BaseController implements IAuth {
             const ageCalculate = birthDate ? moment().year() - moment(birthDate).year() : undefined;
 
             // save user
-            const newUser = await this.userQuery.create({
+            const newUser = await userQuery.create({
                 age: ageCalculate,
-                birthDate,
+                birthDate: new Date(birthDate),
                 email,
                 gender,
                 locations: location,
@@ -129,24 +125,51 @@ class Auth extends BaseController implements IAuth {
                 role,
             });
 
-            const verifyToken = this.jwtRenderToken({
+            const verifyToken = jwtRenderToken({
                 id: newUser.id,
                 email: newUser.email,
                 role: newUser.role
             });
 
-            mailSender.registerNotification(
+            await mailSender.registerNotification(
                 {
-                    email,
                     id: newUser.id,
+                    email: newUser.email,
                     role: newUser.role
                 },
                 verifyToken
             );
 
-            responseHandler.successHandler(res, newUser);
+            responseHandler.successHandler(res, {});
         } catch (error) {
             console.log('>>>>>>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
+        }
+    }
+
+    async verifyUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { token } = req.query;
+            // authenticated token
+            const verifiedToken: any = await jwt.verify(String(token), config.jwtSecretKey);
+            if (!verifiedToken) {
+                this.errorResponse({
+                    code: 401,
+                    error: 'Unauthorize'
+                });
+            }
+
+            // update user verified flag
+            await userQuery.update({
+                id: Number(verifiedToken.id),
+                updatingData: {
+                    isVerified: true
+                }
+            });
+
+            responseHandler.successHandler(res, `Your profile has success verified`);
+        } catch (error) {
+            console.log('>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);
         }
     }
@@ -162,15 +185,26 @@ class Auth extends BaseController implements IAuth {
                     error: this.errorMessage.required(token)
                 });
             }
-            const tokenData: JwtPayload = jwtDecode(String(token));
-            console.log("🚀 ~ Auth ~ resetPassword ~ tokenData:", tokenData);
-            // const newPasswordDecrypt = await bcrypt.hash(newPassword, config.passwordSalt);
-            // await this.userQuery.update({
-            //     id: Number(tokenData.),
-            //     updatingData: {
-            //         password: newPasswordDecrypt
-            //     }
-            // });
+
+            // token checking
+            const verifiedToken: any = await jwt.verify(String(token), config.jwtSecretKey);
+            if (!verifiedToken) {
+                this.errorResponse({
+                    code: 401,
+                    error: 'Unauthorize'
+                });
+            }
+
+            const newPasswordHashed = await bcrypt.hash(newPassword, config.passwordSalt);
+
+            // update new password
+            await userQuery.update({
+                id: verifiedToken.id,
+                updatingData: {
+                    password: newPasswordHashed,
+                }
+            });
+
             responseHandler.successHandler(res, `Success reset password`);
         } catch (error) {
             console.log('>>>>>>>>>>>>>>>', error);
@@ -181,19 +215,22 @@ class Auth extends BaseController implements IAuth {
     async forgotPassword(req: Request, res: Response, next: NextFunction) {
         try {
             const { email } = req.body;
-            const existedUser = await this.userQuery.getOne({ options: { email } });
-            if (!existedUser) {
+            const existedUser = await userQuery.getOne({ options: { email } });
+            if (!existedUser || existedUser.isDeleted) {
                 this.errorResponse({
                     code: 404,
                     error: this.errorMessage.doesExisted(`The user with email ${email}`)
                 });
             }
 
-            const resetPasswordToken = this.jwtRenderToken({
-                email: existedUser?.email,
-                role: existedUser?.role,
-                id: existedUser?.id
-            });
+            const resetPasswordToken = jwtRenderToken(
+                {
+                    email: existedUser?.email,
+                    role: existedUser?.role,
+                    id: existedUser?.id
+                },
+                '15m'
+            );
 
             mailSender.resetPasswordNotification(resetPasswordToken, email);
 
@@ -205,4 +242,4 @@ class Auth extends BaseController implements IAuth {
     }
 }
 
-export default new Auth();
+export const auth = new Auth();

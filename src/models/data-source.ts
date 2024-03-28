@@ -1,7 +1,15 @@
 import { DataSource } from "typeorm";
 import {
     Location,
-    User
+    User,
+    Feedback,
+    FeedbackAsserts,
+    Industry,
+    Product,
+    ProductAsserts,
+    ProductOptions,
+    Shop,
+    ShopAsserts
 } from "./entities";
 import configuration from "../config";
 
@@ -14,7 +22,15 @@ const AppDataSource = new DataSource({
     database: process.env.DB_BASE,
     entities: [
         User,
-        Location
+        Location,
+        FeedbackAsserts,
+        Industry,
+        Product,
+        ProductAsserts,
+        ProductOptions,
+        Shop,
+        ShopAsserts,
+        Feedback
     ],
     migrationsRun: true,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

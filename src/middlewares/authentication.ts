@@ -3,7 +3,7 @@ import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { User } from '../models/entities';
 import UserDataQuery from '../models/dataQueries/base/User.base.dataQueries';
 import { NextFunction, Request, Response } from 'express';
-import configuration from "../config";
+import config from '../config';
 
 interface JWTPayload {
     id: string;
@@ -14,10 +14,10 @@ class Authentication {
         this.initialize();
     }
 
-    private initialize() {
+    initialize() {
         const options = {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: configuration.passportSecretKey
+            secretOrKey: config.jwtSecretKey
         };
 
         passport.use(

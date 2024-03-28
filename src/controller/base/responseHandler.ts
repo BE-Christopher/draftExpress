@@ -31,6 +31,10 @@ export class ErrorMessage {
     doesExisted(field: string) {
         return `${field} does existed`;
     }
+
+    invalidRole(field: string) {
+        return `${field} has invalid role or already have store`;
+    }
 }
 
 export default new ResponseHandler();

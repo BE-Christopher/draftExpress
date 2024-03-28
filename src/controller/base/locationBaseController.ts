@@ -1,31 +1,41 @@
+import { NextFunction, Request, Response } from "express";
 import { FindOptionsWhere } from "typeorm";
-import { ICreateLocation, ILocationQuery } from "../../interfaces/Location";
+import { ELocationType } from "../../interfaces/Location";
 import LocationDataQuery from "../../models/dataQueries/base/Location.base.dataQueries";
+import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
 import { Location, User } from "../../models/entities";
 import { BaseController } from "./base";
-import responseHandler, { ErrorMessage } from "./responseHandler";
-import { NextFunction, Request, Response } from "express";
-import UserDataQuery from "../../models/dataQueries/base/User.base.dataQueries";
+import responseHandler from "./responseHandler";
+
+const locationDataQuery = new LocationDataQuery();
 
 export default class LocationBaseController extends BaseController {
-    locationDataQuery = new LocationDataQuery();
-
-    async getAll(options?: ILocationQuery) {
+    async getAll(req: Request, res: Response, next: NextFunction) {
         try {
+            const {
+                address,
+                country,
+                district,
+                street,
+                ward,
+                userId
+            } = req.query;
             const queryCondition: FindOptionsWhere<Location> = {
-                address: options?.address,
-                country: options?.country,
-                district: options?.district,
-                id: options?.id,
-                street: options?.street,
-                ward: options?.ward,
+                ...(address && { address: String(address) }),
+                ...(country && { country: String(country) }),
+                ...(district && { district: String(district) }),
+                ...(street && { street: String(street) }),
+                ...(ward && { ward: String(ward) }),
                 user: {
-                    id: options?.userId
+                    ...(userId && { id: Number(userId) }),
                 }
             };
-            return await this.locationDataQuery.getAll(queryCondition);
+            const result = await locationDataQuery.getAll(queryCondition);
+
+            responseHandler.successHandler(res, result);
         } catch (error) {
-            throw error;
+            console.log('>>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
         }
     }
 
@@ -42,7 +52,7 @@ export default class LocationBaseController extends BaseController {
                     id: Number(req.query?.userId)
                 }
             };
-            const result = await this.locationDataQuery.getOne(queryCondition);
+            const result = await locationDataQuery.getOne(queryCondition);
             responseHandler.successHandler(res, result);
         } catch (error) {
             console.log('>>>>>>>>>>', error);
@@ -58,7 +68,9 @@ export default class LocationBaseController extends BaseController {
                 district,
                 ward,
                 country,
-                userId
+                userId,
+                locationType,
+                isPickUpPoint,
             } = req.body;
 
             //  case invalid user
@@ -70,14 +82,16 @@ export default class LocationBaseController extends BaseController {
                     error: this.errorMessage.isDeleted(`The user with id: ${userId}`)
                 });
             }
-            const newLocation = await this.locationDataQuery.createOne(
+            const newLocation = await locationDataQuery.createOne(
                 {
-                    address,
-                    street,
-                    district,
-                    ward,
-                    country,
-                    user: currentUser as User
+                    address: String(address),
+                    street: String(street),
+                    district: String(district),
+                    ward: String(ward),
+                    country: String(country),
+                    user: currentUser as User,
+                    isPickUpPoint,
+                    locationType: locationType as ELocationType,
                 }
             );
             responseHandler.successHandler(res, newLocation);
@@ -95,23 +109,27 @@ export default class LocationBaseController extends BaseController {
                 district,
                 ward,
                 country,
-                id
+                locationType,
+                isPickUpPoint,
             } = req.body;
+            const { id } = req.params;
 
             // check is location existed
-            const currentLocation = await this.locationDataQuery.getOne({ id });
+            const currentLocation = await locationDataQuery.getOne({ id: Number(id) });
             if (!currentLocation) {
                 this.errorResponse({ code: 404, error: this.errorMessage.doesExisted(`The location with id: ${id}`) });
             }
 
-            await this.locationDataQuery.updateLocation(
+            await locationDataQuery.updateLocation(
                 Number(id),
                 {
                     address,
                     street,
                     district,
                     ward,
-                    country
+                    country,
+                    locationType,
+                    isPickUpPoint
                 }
             );
             responseHandler.successHandler(res, `Success update location with id: ${id}`);
@@ -125,7 +143,7 @@ export default class LocationBaseController extends BaseController {
         try {
             const { id } = req.params;
 
-            await this.locationDataQuery.softDeleteLocation(Number(id));
+            await locationDataQuery.softDeleteLocation(Number(id));
 
             responseHandler.successHandler(res, `Success disable location with id: ${id}`);
         } catch (error) {
@@ -138,7 +156,7 @@ export default class LocationBaseController extends BaseController {
         try {
             const { id } = req.params;
 
-            await this.locationDataQuery.hardDeleteLocation(Number(id));
+            await locationDataQuery.hardDeleteLocation(Number(id));
 
             responseHandler.successHandler(res, `Success disable location with id: ${id}`);
         } catch (error) {

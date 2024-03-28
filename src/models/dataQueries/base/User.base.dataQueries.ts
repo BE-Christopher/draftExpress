@@ -19,14 +19,12 @@ export interface IUserDataQuery {
     create(payload: DeepPartial<User>): Promise<User>;
 }
 
-const userTb = AppDataSource.getRepository(User);
-
 export default class UserDataQuery implements IUserDataQuery {
-    constructor() { }
+    userTb = AppDataSource.getRepository(User);
 
     getAll(payload: getUserQuery) {
         const { options, relations } = payload;
-        return userTb.find({
+        return this.userTb.find({
             where: options,
             relations: relations
         });
@@ -34,7 +32,7 @@ export default class UserDataQuery implements IUserDataQuery {
 
     getOne(payload: getUserQuery) {
         const { options, relations } = payload;
-        return userTb.findOne({
+        return this.userTb.findOne({
             where: options,
             relations: relations
         });
@@ -42,13 +40,50 @@ export default class UserDataQuery implements IUserDataQuery {
 
     update(payload: updateUserPayload) {
         const { id, updatingData } = payload;
-        return userTb.update(id, updatingData);
+        return this.userTb.update(id, updatingData);
     }
 
     async create(payload: DeepPartial<User>) {
-        const newUser = await userTb.create(payload);
-        await userTb.save(newUser);
+        const newUser = await this.userTb.create(payload);
+        await this.userTb.save(newUser);
 
         return newUser;
+    }
+
+    getUserInfo(user: User) {
+        const {
+            id,
+            email,
+            personalId,
+            avatar,
+            age,
+            birthDate,
+            gender,
+            isDeleted,
+            isVerified,
+            name,
+            phone,
+            role,
+            locations,
+            shopFollowing,
+        } = user;
+
+
+        return {
+            id,
+            email,
+            personalId,
+            avatar,
+            age,
+            birthDate,
+            gender,
+            isDeleted,
+            isVerified,
+            name,
+            phone,
+            role,
+            locations,
+            shopFollowing,
+        };
     }
 }

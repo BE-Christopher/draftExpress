@@ -29,3 +29,9 @@ export interface ILocation {
     country: string;
     user?: IBaseUser;
 }
+
+export enum ELocationType {
+    Home = 'Home',
+    Company = 'Company',
+    Shop = 'Shop'
+}

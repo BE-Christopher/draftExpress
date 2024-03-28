@@ -11,7 +11,8 @@ export interface AppConfig {
     mailUser: string;
     mailPassword: string;
     appDomain: string
-    resetPasswordPath: string
+    resetPasswordPath: string,
+    jwtSecretKey: string
 }
 
 const checkConfiguration = () => {
@@ -28,7 +29,8 @@ const checkConfiguration = () => {
             MAIL_USER,
             MAIL_PASSWORD,
             DOMAIN,
-            RESET_PASSWORD
+            RESET_PASSWORD,
+            JWT_SECRET_KEY
         } = process.env;
         if (
             !DB_USERNAME ||
@@ -41,7 +43,8 @@ const checkConfiguration = () => {
             !MAIL_PASSWORD ||
             !DOMAIN ||
             !RESET_PASSWORD ||
-            !MAIL_USER
+            !MAIL_USER || 
+            !JWT_SECRET_KEY
         ) {
             throw new Error('Configuration missing fields');
         }
@@ -63,7 +66,8 @@ const configuration = () => {
         mailPassword: String(process.env.MAIL_PASSWORD),
         appDomain: String(process.env.DOMAIN),
         resetPasswordPath: String(process.env.RESET_PASSWORD),
-        mailUser: String(process.env.MAIL_USER)
+        mailUser: String(process.env.MAIL_USER),
+        jwtSecretKey: String(process.env.JWT_SECRET_KEY),
     };
     return configuration;
 };

@@ -1,6 +1,7 @@
 import { DeepPartial, DeleteResult, UpdateResult } from "typeorm";
 import { IProductBaseDataQuery, ProductBaseDataQuery } from "../base/Product.base.dataQueries";
 import { Product } from "../../entities";
+import AppDataSource from "../../data-source";
 
 export interface IBuyerProductDataQuery extends IProductBaseDataQuery {
     createOneProduct(payload: DeepPartial<Product>): Promise<Product>;
@@ -9,23 +10,25 @@ export interface IBuyerProductDataQuery extends IProductBaseDataQuery {
     deleteProduct(id: number): Promise<DeleteResult>;
 }
 
+const productTB = AppDataSource.getRepository(Product);
+
 class BuyerProductDataQuery extends ProductBaseDataQuery implements IBuyerProductDataQuery {
     async createOneProduct(payload: DeepPartial<Product>) {
-        const newProduct = await this.productTB.create(payload);
-        await this.productTB.save(newProduct);
+        const newProduct = await productTB.create(payload);
+        await productTB.save(newProduct);
         return newProduct;
     }
 
     updateProduct(id: number, payload: DeepPartial<Product>) {
-        return this.productTB.update(id, payload);
+        return productTB.update(id, payload);
     }
 
     disableProduct(id: number) {
-        return this.productTB.softDelete(id);
+        return productTB.softDelete(id);
     }
 
     deleteProduct(id: number) {
-        return this.productTB.delete(id);
+        return productTB.delete(id);
     }
 }
 

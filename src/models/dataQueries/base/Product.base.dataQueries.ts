@@ -35,8 +35,9 @@ export type GetAllProductPayload = {
     shopId?: number;
 };
 
+const productTB = AppDataSource.getRepository(Product);
+
 export class ProductBaseDataQuery implements IProductBaseDataQuery {
-    productTB = AppDataSource.getRepository(Product);
 
     getAllProduct({
         rating,
@@ -85,32 +86,34 @@ export class ProductBaseDataQuery implements IProductBaseDataQuery {
             }
         };
 
-        return this.productTB.findAndCount({
+        return productTB.findAndCount({
             select: selectOptions,
-            where: {
-                feedbacks: {
-                    rating: rating ? MoreThanOrEqual(rating) : undefined
-                },
-                industry: {
-                    id: industryId
-                },
-                name: Like(`%${productName}%`),
-                price: (lowPrice || maxPrice) ? Between(lowPrice ?? 0, maxPrice ?? maxRangerPrice) : undefined,
-                shop: {
-                    id: shopId ?? undefined,
-                    industries: {
-                        id: industryId
-                    },
-                    status: EShopStatus.Active,
-                    author: {
-                        locations: {
-                            country: location?.country ?? undefined,
-                            district: location?.district ?? undefined,
-                            ward: location?.ward ?? undefined
-                        }
-                    },
-                },
-            },
+            
+            // wip - update late
+            // where: {
+            //     feedbacks: {
+            //         rating: rating ? MoreThanOrEqual(rating) : undefined
+            //     },
+            //     industry: {
+            //         id: industryId
+            //     },
+            //     name: Like(`%${productName}%`),
+            //     price: (lowPrice || maxPrice) ? Between(lowPrice ?? 0, maxPrice ?? maxRangerPrice) : undefined,
+            //     shop: {
+            //         id: shopId ?? undefined,
+            //         industries: {
+            //             id: industryId
+            //         },
+            //         status: EShopStatus.Active,
+            //         author: {
+            //             locations: {
+            //                 country: location?.country ?? undefined,
+            //                 district: location?.district ?? undefined,
+            //                 ward: location?.ward ?? undefined
+            //             }
+            //         },
+            //     },
+            // },
             relations: shopGettingRelations,
             skip: (page - 1) * limit,
             take: limit,
@@ -119,7 +122,7 @@ export class ProductBaseDataQuery implements IProductBaseDataQuery {
     }
 
     getOneProduct(id: number) {
-        return this.productTB.findOne({
+        return productTB.findOne({
             select: {
                 id: true,
                 name: true,

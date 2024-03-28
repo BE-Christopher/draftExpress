@@ -18,7 +18,6 @@ const router = Router();
 class IRouters implements BaseRouter {
     getRoutes() {
         // unauthorize router
-        router.use('/demo', demoRouter.getRoutes());
         router.use('/auth', authRouter.getRoutes());
 
         // authorize router

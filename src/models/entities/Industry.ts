@@ -11,6 +11,6 @@ export class Industry extends BaseEntity {
     @ManyToMany(() => Shop, shop => shop.industries)
     shops: Shop[];
 
-    @OneToMany(() => Product, product => product.id)
+    @OneToMany(() => Product, product => product.industry)
     products: Product[];
 }

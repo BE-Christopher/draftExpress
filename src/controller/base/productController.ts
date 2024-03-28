@@ -3,8 +3,9 @@ import { BaseController } from "./base";
 import responseHandler from "./responseHandler";
 import { GetAllProductLocation, ProductBaseDataQuery } from "../../models/dataQueries/base/Product.base.dataQueries";
 
+const productQuery = new ProductBaseDataQuery();
+
 export class ProductBaseController extends BaseController {
-    productQuery = new ProductBaseDataQuery();
 
     async getList(req: Request, res: Response, next: NextFunction) {
         try {
@@ -21,7 +22,7 @@ export class ProductBaseController extends BaseController {
                 shopId
             } = req.query;
 
-            const result = await this.productQuery.getAllProduct({
+            const [products, total] = await productQuery.getAllProduct({
                 limit: Number(limit),
                 page: Number(page),
                 ...(industryId && { industryId: Number(industryId) }),
@@ -33,7 +34,11 @@ export class ProductBaseController extends BaseController {
                 ...(location && { location: location as GetAllProductLocation }),
             });
 
-            responseHandler.successHandler(res, result);
+            responseHandler.successHandler(res, {
+                products,
+                totalPages: Number(total) % Number(limit),
+                currentPage: Number(page)
+            });
         } catch (error) {
             console.log('>>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);
@@ -43,7 +48,7 @@ export class ProductBaseController extends BaseController {
     async getOne(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const result = await this.productQuery.getOneProduct(Number(id));
+            const result = await productQuery.getOneProduct(Number(id));
             responseHandler.successHandler(res, result);
         } catch (error) {
             console.log('>>>>>>>>>>', error);

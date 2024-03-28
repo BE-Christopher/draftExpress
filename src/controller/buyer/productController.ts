@@ -21,8 +21,8 @@ export enum ProductDeleteType {
     Hard = 'Hard'
 }
 
+const productQuery = buyerProductDataQuery;
 class BuyerProductController extends ProductBaseController {
-    productQuery = buyerProductDataQuery;
 
     async createNewProduct(req: Request, res: Response, next: NextFunction) {
         try {
@@ -55,7 +55,7 @@ class BuyerProductController extends ProductBaseController {
                 });
             }
 
-            const newProduct = await this.productQuery.createOneProduct({
+            const newProduct = await productQuery.createOneProduct({
                 name,
                 description,
                 price,
@@ -77,7 +77,7 @@ class BuyerProductController extends ProductBaseController {
     async deleteProduct(req: Request, res: Response, next: NextFunction) {
         try {
             const { type } = req.body;
-            const { id } = req.params
+            const { id } = req.params;
 
             // check type
             if (!(String(type) in ProductDeleteType)) {
@@ -88,9 +88,9 @@ class BuyerProductController extends ProductBaseController {
             }
 
             if (String(type === ProductDeleteType.Soft)) {
-                await this.productQuery.disableProduct(Number(id));
+                await productQuery.disableProduct(Number(id));
             } else {
-                await this.productQuery.deleteProduct(Number(id));
+                await productQuery.deleteProduct(Number(id));
             }
 
             responseHandler.successHandler(res, `Success ${type} delete product with id: ${id}`);
@@ -108,9 +108,8 @@ class BuyerProductController extends ProductBaseController {
                 price,
                 unit,
                 sold,
-                productOptionList,
             } = req.body;
-            const { id } = req.params
+            const { id } = req.params;
 
             // data field checking
             if (!(String(unit) in ECurrencyUnit)) {
@@ -120,13 +119,12 @@ class BuyerProductController extends ProductBaseController {
                 });
             }
 
-            await this.productQuery.updateProduct(Number(id), {
+            await productQuery.updateProduct(Number(id), {
                 name,
                 description,
                 price,
                 unit,
                 sold,
-                productOptionList,
             });
 
             responseHandler.successHandler(res, `Success update product with id: ${id}`);
@@ -144,7 +142,7 @@ class BuyerProductController extends ProductBaseController {
             } = req.body;
 
             // check currentProducts
-            const currentProducts = await this.productQuery.getOneProduct(id);
+            const currentProducts = await productQuery.getOneProduct(id);
             if (!currentProducts) {
                 this.errorResponse({
                     code: 404,
@@ -153,7 +151,7 @@ class BuyerProductController extends ProductBaseController {
             }
             const currentAsserts = currentProducts?.asserts ?? [];
 
-            await this.productQuery.updateProduct(id, {
+            await productQuery.updateProduct(id, {
                 asserts: [...currentAsserts, ...asserts]
             });
 
@@ -172,7 +170,7 @@ class BuyerProductController extends ProductBaseController {
             } = req.body;
 
             // check currentProducts
-            const currentProducts = await this.productQuery.getOneProduct(id);
+            const currentProducts = await productQuery.getOneProduct(id);
             if (!currentProducts) {
                 this.errorResponse({
                     code: 404,
@@ -181,7 +179,7 @@ class BuyerProductController extends ProductBaseController {
             }
             const deletedAsserts = (currentProducts?.asserts ?? []).filter((item) => Array(asserts).includes(item.id));
 
-            await this.productQuery.updateProduct(id, {
+            await productQuery.updateProduct(id, {
                 asserts: deletedAsserts
             });
 
@@ -201,7 +199,7 @@ class BuyerProductController extends ProductBaseController {
             } = req.body;
 
             // check currentProducts
-            const currentProducts = await this.productQuery.getOneProduct(id);
+            const currentProducts = await productQuery.getOneProduct(id);
             if (!currentProducts) {
                 this.errorResponse({
                     code: 404,
@@ -210,7 +208,7 @@ class BuyerProductController extends ProductBaseController {
             }
 
             // update list options choose
-            await this.productQuery.updateProduct(id, { productOptionList: [...currentProducts?.productOptionList ?? [], ...listOptions] });
+            await productQuery.updateProduct(id, { productOptionList: [...currentProducts?.productOptionList ?? [], ...listOptions] });
 
             // update product options
             if (Array(options).length) {
@@ -237,7 +235,7 @@ class BuyerProductController extends ProductBaseController {
             } = req.body;
 
             // check currentProducts
-            const currentProducts = await this.productQuery.getOneProduct(id);
+            const currentProducts = await productQuery.getOneProduct(id);
             if (!currentProducts) {
                 this.errorResponse({
                     code: 404,
@@ -246,7 +244,7 @@ class BuyerProductController extends ProductBaseController {
             }
 
             // update list choose
-            await this.productQuery.updateProduct(id, { productOptionList: listOptions });
+            await productQuery.updateProduct(id, { productOptionList: listOptions });
 
             // remove product options
             if (Array(options).length) {

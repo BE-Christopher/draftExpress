@@ -22,10 +22,10 @@ export class Product extends BaseEntity {
     @Column({ nullable: false })
     description: string;
 
-    @OneToMany(() => ProductAsserts, productAsserts => productAsserts.id)
+    @OneToMany(() => ProductAsserts, productAsserts => productAsserts.product)
     asserts: ProductAsserts[];
 
-    @OneToMany(() => Feedback, feedback => feedback.id)
+    @OneToMany(() => Feedback, feedback => feedback.product)
     feedbacks: Feedback[];
 
     @ManyToOne(() => Shop, shop => shop.products)

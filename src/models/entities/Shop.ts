@@ -18,19 +18,19 @@ export class Shop extends BaseEntity {
     author: User;
 
     @ManyToMany(() => Industry, { nullable: true, cascade: true })
-    @JoinTable({ name: 'shops_industries' })
+    @JoinTable()
     industries: Industry[];
 
     @Column({ type: 'enum', enum: EShopStatus, default: EShopStatus.Inactive })
     status: EShopStatus;
 
     @ManyToMany(() => User, { cascade: true, nullable: true })
-    @JoinTable({ name: 'shops_followers' })
+    @JoinTable()
     followers: User[];
 
     @OneToMany(() => ShopAsserts, shopAsserts => shopAsserts.id, { cascade: true, nullable: true })
     asserts: ShopAsserts[];
 
-    @OneToMany(() => Product, product => product.id, { cascade: true })
+    @OneToMany(() => Product, product => product.shop, { cascade: true })
     products: Product[];
 }

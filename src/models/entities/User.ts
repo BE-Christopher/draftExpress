@@ -6,6 +6,7 @@ import { Location } from "./Location";
 import { BaseEntity } from "./Base";
 import { Shop } from "./Shop";
 import { Feedback } from "./Feedback";
+import { ShoppingCart } from "./ShoppingCart";
 
 @Entity()
 export class User extends BaseEntity {
@@ -57,4 +58,7 @@ export class User extends BaseEntity {
 
     @Column({ nullable: true })
     avatar: string;
+
+    @OneToOne(() => ShoppingCart, shoppingCart => shoppingCart.author, { nullable: true, cascade: true })
+    cart: ShoppingCart;
 }

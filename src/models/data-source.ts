@@ -9,7 +9,10 @@ import {
     ProductAsserts,
     ProductOptions,
     Shop,
-    ShopAsserts
+    ShopAsserts,
+    ShoppingCart,
+    CartItem,
+    CartItemOptions
 } from "./entities";
 import configuration from "../config";
 
@@ -30,7 +33,10 @@ const AppDataSource = new DataSource({
         ProductOptions,
         Shop,
         ShopAsserts,
-        Feedback
+        Feedback,
+        ShoppingCart,
+        CartItem,
+        CartItemOptions
     ],
     migrationsRun: true,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

@@ -6,6 +6,7 @@ import { Feedback } from "./Feedback";
 import { Shop } from "./Shop";
 import { Industry } from "./Industry";
 import { ProductOptions } from "./ProductOptions";
+import { CartItem } from "./CartItem";
 
 
 @Entity({ name: 'products' })
@@ -42,4 +43,7 @@ export class Product extends BaseEntity {
 
     @Column({ type: 'json', nullable: true })
     productOptionList: any[];
+
+    @OneToMany(() => CartItem, cartItem => cartItem.product, { nullable: true, cascade: true })
+    carts: CartItem[];
 }

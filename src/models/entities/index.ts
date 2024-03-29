@@ -12,3 +12,7 @@ export * from './FeedbackAssert';
 export * from './Product';
 export * from './ProductAssert';
 export * from './ProductOptions';
+
+export * from './ShoppingCart';
+export * from './CartItem';
+export * from './CartItemOption';

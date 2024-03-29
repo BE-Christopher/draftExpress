@@ -10,9 +10,11 @@ export interface AppConfig {
     passwordSalt: number;
     mailUser: string;
     mailPassword: string;
-    appDomain: string
+    appDomain: string;
     resetPasswordPath: string,
-    jwtSecretKey: string
+    jwtSecretKey: string,
+    socketPort: number;
+    socketDomain: string;
 }
 
 const checkConfiguration = () => {
@@ -30,7 +32,9 @@ const checkConfiguration = () => {
             MAIL_PASSWORD,
             DOMAIN,
             RESET_PASSWORD,
-            JWT_SECRET_KEY
+            JWT_SECRET_KEY,
+            SOCKET_PORT,
+            SOCKET_DOMAIN
         } = process.env;
         if (
             !DB_USERNAME ||
@@ -43,8 +47,10 @@ const checkConfiguration = () => {
             !MAIL_PASSWORD ||
             !DOMAIN ||
             !RESET_PASSWORD ||
-            !MAIL_USER || 
-            !JWT_SECRET_KEY
+            !MAIL_USER ||
+            !JWT_SECRET_KEY ||
+            !SOCKET_PORT ||
+            !SOCKET_DOMAIN
         ) {
             throw new Error('Configuration missing fields');
         }
@@ -68,6 +74,8 @@ const configuration = () => {
         resetPasswordPath: String(process.env.RESET_PASSWORD),
         mailUser: String(process.env.MAIL_USER),
         jwtSecretKey: String(process.env.JWT_SECRET_KEY),
+        socketPort: Number(process.env.SOCKET_PORT),
+        socketDomain: String(process.env.SOCKET_DOMAIN)
     };
     return configuration;
 };

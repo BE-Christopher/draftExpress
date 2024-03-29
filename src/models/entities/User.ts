@@ -60,5 +60,6 @@ export class User extends BaseEntity {
     avatar: string;
 
     @OneToOne(() => ShoppingCart, shoppingCart => shoppingCart.author, { nullable: true, cascade: true })
+    @JoinColumn()
     cart: ShoppingCart;
 }

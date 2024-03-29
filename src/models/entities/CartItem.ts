@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToOne } from "typeorm";
+import { Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { BaseEntity } from "./Base";
 import { ShoppingCart } from "./ShoppingCart";
 import { Product } from "./Product";
@@ -14,5 +14,6 @@ export class CartItem extends BaseEntity {
     product: Product;
 
     @OneToOne(() => CartItemOptions, cartItemOption => cartItemOption.cartItem, { cascade: true })
+    @JoinColumn()
     chooseOption: CartItemOptions;
 }

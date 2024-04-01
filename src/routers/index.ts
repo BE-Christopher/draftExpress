@@ -10,7 +10,7 @@ import { adminIndustryRouter, adminProductRouter, adminShopRouter } from "./admi
 import { feedbackRouter } from "./feedback.router";
 import { userBillRouter, userFeedbackRouter, userShoppingCartRouter, userShopRouter } from "./user";
 import { shopRouter } from "./shop.router";
-import { buyerProductRouter, buyerShopRouter } from "./buyer";
+import { buyerBillRouter, buyerProductRouter, buyerShopRouter } from "./buyer";
 import { productRouter } from "./product.router";
 
 const router = Router();
@@ -38,6 +38,7 @@ class IRouters implements BaseRouter {
         router.use('/buyer/location', authentication.authenticate, checkUserRole.isBuyer, locationRouter.getRoutes());
         router.use('/buyer/shop', authentication.authenticate, checkUserRole.isBuyer, buyerShopRouter.getRoutes());
         router.use('/buyer/product', authentication.authenticate, checkUserRole.isBuyer, buyerProductRouter.getRoutes());
+        router.use('/buyer/bill', authentication.authenticate, checkUserRole.isBuyer, buyerBillRouter.getRoutes());
 
         // admin role
         router.use('/admin/industry', authentication.authenticate, checkUserRole.isAdmin, adminIndustryRouter.getRoutes());

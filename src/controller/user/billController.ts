@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { EBillStatus } from "../../interfaces";
 import LocationDataQuery from "../../models/dataQueries/base/Location.base.dataQueries";
 import { userBillDataQuery } from "../../models/dataQueries/user";
-import { User } from "../../models/entities";
+import { CartItem, User } from "../../models/entities";
 import { BaseController } from "../base/base";
 import responseHandler from "../base/responseHandler";
 import { CartItemDataQuery } from '../../models/dataQueries/base/CartItem.base.dataQueries';
@@ -113,6 +113,53 @@ class UserBillController extends BaseController {
             });
 
             responseHandler.successHandler(res, newBill);
+        } catch (error) {
+            console.log('>>>>>>>>>', error);
+            responseHandler.errorHandler(res, error);
+        }
+    }
+
+    async updateBill(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const {
+                deliveryPortId,
+                removingItems
+            } = req.body;
+
+            // check bill status
+            const currentBill = await billQuery.getOne({ options: { id: Number(id) } });
+            if (!currentBill) {
+                this.errorResponse({
+                    code: 404,
+                    error: `The bill with id ${id} doesn't existed`
+                });
+            }
+            if (currentBill?.status !== EBillStatus.WaitingApprove) {
+                this.errorResponse({
+                    code: 403,
+                    error: `Can't update processed bill`
+                });
+            }
+
+            // handle update data
+            let newDeliveryPort;
+            let newItems = [];
+
+            if (deliveryPortId) {
+                newDeliveryPort = await locationQuery.getOne({ id: Number(deliveryPortId) });
+            }
+
+            if (removingItems) {
+                newItems = (currentBill?.items as CartItem[]).filter((item) => item.id in Array(removingItems));
+            }
+
+            await billQuery.updateBill(Number(id), {
+                ...(deliveryPortId && { deliverPort: newDeliveryPort }),
+                ...(removingItems && { items: removingItems })
+            });
+
+            responseHandler.successHandler(res, `Success update bill with id: ${id}`);
         } catch (error) {
             console.log('>>>>>>>>>', error);
             responseHandler.errorHandler(res, error);

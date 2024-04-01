@@ -108,6 +108,10 @@ class UserBillDataQuery implements IUserBillDataQuery {
             relations: defaultRelations
         });
     }
+
+    updateBill(id: number, payload: DeepPartial<Bill>) {
+        return billTb.update(id, payload);
+    }
 }
 
 export const userBillDataQuery = new UserBillDataQuery();

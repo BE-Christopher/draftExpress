@@ -4,4 +4,5 @@ export enum EBillStatus {
     Delivering = 'Delivering',
     Received = 'Received',
     Cancel = 'Cancel',
+    Reject = 'Reject',
 }

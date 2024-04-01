@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { BaseEntity } from "./Base";
 import { Product } from "./Product";
+import { CartItemOptions } from "./CartItemOption";
 
 
 @Entity({ name: 'product_Options' })
@@ -16,4 +17,8 @@ export class ProductOptions extends BaseEntity {
 
     @ManyToOne(() => Product, product => product.productOptions)
     product: Product;
+
+    @OneToOne(() => CartItemOptions, cartItemOption => cartItemOption.productOption, { cascade: true, nullable: true })
+    @JoinColumn()
+    cartItemOption: CartItemOptions;
 }

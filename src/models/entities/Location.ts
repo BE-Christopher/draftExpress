@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 import { User } from "./User";
 import { BaseEntity } from "./Base";
 import { ELocationType } from "../../interfaces";
+import { Bill } from "./Bill";
 
 
 @Entity({ name: 'locations' })
@@ -29,4 +30,10 @@ export class Location extends BaseEntity {
 
     @ManyToOne(() => User, user => user.locations)
     user: User;
+
+    @OneToOne(() => Bill, bill => bill.deliverPort)
+    billDeliver: Bill;
+
+    @OneToOne(() => Bill, bill => bill.deliverPort)
+    billPicking: Bill;
 }

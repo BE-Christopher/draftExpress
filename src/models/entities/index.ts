@@ -16,3 +16,5 @@ export * from './ProductOptions';
 export * from './ShoppingCart';
 export * from './CartItem';
 export * from './CartItemOption';
+
+export * from './Bill';

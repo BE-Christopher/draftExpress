@@ -4,6 +4,7 @@ import { EBillStatus } from "../../interfaces";
 import { User } from "./User";
 import { Location } from "./Location";
 import { CartItem } from "./CartItem";
+import { Shop } from "./Shop";
 
 @Entity({ name: 'bills' })
 export class Bill extends BaseEntity {
@@ -26,4 +27,7 @@ export class Bill extends BaseEntity {
 
     @OneToMany(() => CartItem, cartItems => cartItems.bill, { cascade: true, nullable: false })
     items: CartItem[];
+
+    @ManyToOne(() => Shop, shop => shop.bills, { cascade: true })
+    shop: Shop;
 }

@@ -8,7 +8,7 @@ import { locationRouter } from "./location.router";
 import { industryRouter } from "./industry.router";
 import { adminIndustryRouter, adminProductRouter, adminShopRouter } from "./admin";
 import { feedbackRouter } from "./feedback.router";
-import { userFeedbackRouter, userShoppingCartRouter, userShopRouter } from "./user";
+import { userBillRouter, userFeedbackRouter, userShoppingCartRouter, userShopRouter } from "./user";
 import { shopRouter } from "./shop.router";
 import { buyerProductRouter, buyerShopRouter } from "./buyer";
 import { productRouter } from "./product.router";
@@ -32,7 +32,7 @@ class IRouters implements BaseRouter {
         router.use('/user/feedback', authentication.authenticate, checkUserRole.isUser, userFeedbackRouter.getRoutes());
         router.use('/user/shop', authentication.authenticate, checkUserRole.isUser, userShopRouter.getRoutes());
         router.use('/user/cart', authentication.authenticate, checkUserRole.isUser, userShoppingCartRouter.getRoutes());
-
+        router.use('/user/bill', authentication.authenticate, checkUserRole.isUser, userBillRouter.getRoutes());
 
         // buyer role
         router.use('/buyer/location', authentication.authenticate, checkUserRole.isBuyer, locationRouter.getRoutes());

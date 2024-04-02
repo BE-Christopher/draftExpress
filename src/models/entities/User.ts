@@ -8,6 +8,7 @@ import { Shop } from "./Shop";
 import { Feedback } from "./Feedback";
 import { ShoppingCart } from "./ShoppingCart";
 import { Bill } from "./Bill";
+import { CardWallet } from "./CardWallet";
 
 @Entity()
 export class User extends BaseEntity {
@@ -66,4 +67,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Bill, bills => bills.author)
     bills: Bill[];
+
+    @OneToMany(() => CardWallet, cartWallet => cartWallet.author)
+    cards: CardWallet[];
 }

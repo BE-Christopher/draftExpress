@@ -12,7 +12,8 @@ import {
     ShopAsserts,
     ShoppingCart,
     CartItem,
-    CartItemOptions
+    CartItemOptions,
+    Bill
 } from "./entities";
 import configuration from "../config";
 
@@ -36,7 +37,8 @@ const AppDataSource = new DataSource({
         Feedback,
         ShoppingCart,
         CartItem,
-        CartItemOptions
+        CartItemOptions,
+        Bill,
     ],
     migrationsRun: true,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

@@ -7,6 +7,7 @@ import { BaseEntity } from "./Base";
 import { Shop } from "./Shop";
 import { Feedback } from "./Feedback";
 import { ShoppingCart } from "./ShoppingCart";
+import { Bill } from "./Bill";
 
 @Entity()
 export class User extends BaseEntity {
@@ -62,4 +63,7 @@ export class User extends BaseEntity {
     @OneToOne(() => ShoppingCart, shoppingCart => shoppingCart.author, { nullable: true, cascade: true })
     @JoinColumn()
     cart: ShoppingCart;
+
+    @OneToMany(() => Bill, bills => bills.author)
+    bills: Bill[];
 }

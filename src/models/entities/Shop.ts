@@ -5,6 +5,7 @@ import { Industry } from "./Industry";
 import { EShopStatus } from "../../interfaces";
 import { ShopAsserts } from "./ShopAssert";
 import { Product } from "./Product";
+import { Bill } from "./Bill";
 
 @Entity({ name: 'shops' })
 export class Shop extends BaseEntity {
@@ -33,4 +34,7 @@ export class Shop extends BaseEntity {
 
     @OneToMany(() => Product, product => product.shop, { cascade: true })
     products: Product[];
+
+    @OneToMany(() => Bill, bill => bill.shop)
+    bills: Bill[];
 }

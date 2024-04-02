@@ -8,9 +8,9 @@ import { locationRouter } from "./location.router";
 import { industryRouter } from "./industry.router";
 import { adminIndustryRouter, adminProductRouter, adminShopRouter } from "./admin";
 import { feedbackRouter } from "./feedback.router";
-import { userFeedbackRouter, userShoppingCartRouter, userShopRouter } from "./user";
+import { userBillRouter, userFeedbackRouter, userShoppingCartRouter, userShopRouter } from "./user";
 import { shopRouter } from "./shop.router";
-import { buyerProductRouter, buyerShopRouter } from "./buyer";
+import { buyerBillRouter, buyerProductRouter, buyerShopRouter } from "./buyer";
 import { productRouter } from "./product.router";
 
 const router = Router();
@@ -32,12 +32,13 @@ class IRouters implements BaseRouter {
         router.use('/user/feedback', authentication.authenticate, checkUserRole.isUser, userFeedbackRouter.getRoutes());
         router.use('/user/shop', authentication.authenticate, checkUserRole.isUser, userShopRouter.getRoutes());
         router.use('/user/cart', authentication.authenticate, checkUserRole.isUser, userShoppingCartRouter.getRoutes());
-
+        router.use('/user/bill', authentication.authenticate, checkUserRole.isUser, userBillRouter.getRoutes());
 
         // buyer role
         router.use('/buyer/location', authentication.authenticate, checkUserRole.isBuyer, locationRouter.getRoutes());
         router.use('/buyer/shop', authentication.authenticate, checkUserRole.isBuyer, buyerShopRouter.getRoutes());
         router.use('/buyer/product', authentication.authenticate, checkUserRole.isBuyer, buyerProductRouter.getRoutes());
+        router.use('/buyer/bill', authentication.authenticate, checkUserRole.isBuyer, buyerBillRouter.getRoutes());
 
         // admin role
         router.use('/admin/industry', authentication.authenticate, checkUserRole.isAdmin, adminIndustryRouter.getRoutes());

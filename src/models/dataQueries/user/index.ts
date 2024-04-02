@@ -5,3 +5,4 @@ export * from './Feedback.user.dataQueries';
 export * from './Industry.user.dataQueries';
 export * from './Product.user.dataQueries';
 export * from './ShoppingCart.user.dataQueries';
+export * from './Bill.user.dataQueries';

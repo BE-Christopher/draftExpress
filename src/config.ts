@@ -15,6 +15,13 @@ export interface AppConfig {
     jwtSecretKey: string,
     socketPort: number;
     socketDomain: string;
+    clientId: string;
+    apiKey: string;
+    checkCardPath: string;
+    adminBankBin: string;
+    adminBankAccount: string;
+    adminBankName: string;
+    generateQrPath: string;
 }
 
 const checkConfiguration = () => {
@@ -34,7 +41,14 @@ const checkConfiguration = () => {
             RESET_PASSWORD,
             JWT_SECRET_KEY,
             SOCKET_PORT,
-            SOCKET_DOMAIN
+            SOCKET_DOMAIN,
+            CLIENT_ID,
+            API_KEY,
+            CHECK_CARD_PATH,
+            ADMIN_BANK_BIN,
+            ADMIN_BANK_ACCOUNT,
+            ADMIN_BANK_NAME,
+            GENERATE_QR_PATH
         } = process.env;
         if (
             !DB_USERNAME ||
@@ -50,7 +64,14 @@ const checkConfiguration = () => {
             !MAIL_USER ||
             !JWT_SECRET_KEY ||
             !SOCKET_PORT ||
-            !SOCKET_DOMAIN
+            !SOCKET_DOMAIN ||
+            !CLIENT_ID ||
+            !API_KEY ||
+            !CHECK_CARD_PATH ||
+            !ADMIN_BANK_BIN ||
+            !ADMIN_BANK_ACCOUNT ||
+            !ADMIN_BANK_NAME ||
+            !GENERATE_QR_PATH
         ) {
             throw new Error('Configuration missing fields');
         }
@@ -75,7 +96,14 @@ const configuration = () => {
         mailUser: String(process.env.MAIL_USER),
         jwtSecretKey: String(process.env.JWT_SECRET_KEY),
         socketPort: Number(process.env.SOCKET_PORT),
-        socketDomain: String(process.env.SOCKET_DOMAIN)
+        socketDomain: String(process.env.SOCKET_DOMAIN),
+        clientId: String(process.env.CLIENT_ID),
+        apiKey: String(process.env.API_KEY),
+        checkCardPath: String(process.env.CHECK_CARD_PATH),
+        adminBankAccount: String(process.env.ADMIN_BANK_ACCOUNT),
+        adminBankBin: String(process.env.ADMIN_BANK_BIN),
+        adminBankName: String(process.env.ADMIN_BANK_NAME),
+        generateQrPath: String(process.env.GENERATE_QR_PATH)
     };
     return configuration;
 };

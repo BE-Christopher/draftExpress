@@ -5,6 +5,7 @@ import { User } from "./User";
 import { Location } from "./Location";
 import { CartItem } from "./CartItem";
 import { Shop } from "./Shop";
+import { Payment } from "./Payment";
 
 @Entity({ name: 'bills' })
 export class Bill extends BaseEntity {
@@ -30,4 +31,7 @@ export class Bill extends BaseEntity {
 
     @ManyToOne(() => Shop, shop => shop.bills, { cascade: true })
     shop: Shop;
+
+    @OneToOne(() => Payment, payment => payment.bill)
+    payment: Payment;
 }

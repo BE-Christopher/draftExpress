@@ -33,7 +33,8 @@ const defaultRelations = {
             }
         }
     },
-    shop: true
+    shop: true,
+    payment: true
 };
 
 const defaultSelect = {
@@ -66,6 +67,11 @@ const defaultSelect = {
         id: true,
         name: true,
         description: true,
+    },
+    payment: {
+        id: true,
+        paidCode: true,
+        paidStatus: true,
     }
 };
 

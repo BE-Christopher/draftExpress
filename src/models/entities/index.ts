@@ -28,3 +28,4 @@ export * from './Bill';
 
 // payment service
 export * from './CardWallet';
+export * from './Payment';

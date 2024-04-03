@@ -8,11 +8,14 @@ import { BaseController } from "../base/base";
 import responseHandler from "../base/responseHandler";
 import { CartItemDataQuery } from '../../models/dataQueries/base/CartItem.base.dataQueries';
 import ShopeBaseDataQuery from '../../models/dataQueries/base/Shop.base.dataQueries';
+import shortid = require('shortid');
+import { PaymentBaseDataQuery } from '../../models/dataQueries/base/Payment.base.dataQueries';
 
 const billQuery = userBillDataQuery;
 const locationQuery = new LocationDataQuery();
 const cartItemQuery = new CartItemDataQuery();
 const shopQuery = new ShopeBaseDataQuery();
+const paymentQuery = new PaymentBaseDataQuery();
 
 class UserBillController extends BaseController {
     async getAllBill(req: Request, res: Response, next: NextFunction) {
@@ -109,7 +112,13 @@ class UserBillController extends BaseController {
                 pickingPort: pickingPort as any,
                 deliverPort: deliveryPort as any,
                 items: items as any,
-                shop: buyingShop as any
+                shop: buyingShop as any,
+            });
+
+            // init payment
+            const newPayment = await paymentQuery.initPayment({
+                bill: newBill,
+                paidCode: shortid.generate()
             });
 
             responseHandler.successHandler(res, newBill);

@@ -98,7 +98,6 @@ export class UserShoppingCartDataQuery implements IUserShoppingCart {
                 quantity,
             }
         });
-        console.log("🚀 ~ UserShoppingCartDataQuery ~ newItem:", newItem);
         updatingCartItems.push(newItem);
         await shoppingCartTb.save({
             ...currentCart,

@@ -14,7 +14,8 @@ import {
     CartItem,
     CartItemOptions,
     Bill,
-    CardWallet
+    CardWallet,
+    Payment
 } from "./entities";
 import configuration from "../config";
 
@@ -40,7 +41,8 @@ const AppDataSource = new DataSource({
         CartItem,
         CartItemOptions,
         Bill,
-        CardWallet
+        CardWallet,
+        Payment
     ],
     migrationsRun: true,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

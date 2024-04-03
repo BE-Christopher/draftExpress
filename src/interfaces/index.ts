@@ -3,3 +3,4 @@ export * from './User.baseController';
 export * from './shop';
 export * from './Product';
 export * from './Bill';
+export * from './Payment';

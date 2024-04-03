@@ -56,7 +56,8 @@ const baseRelations = {
         }
     },
     deliverPort: true,
-    shop: true
+    shop: true,
+    payment: true
 };
 
 class BuyerBillDataQuery implements IBuyerBillDataQuery {

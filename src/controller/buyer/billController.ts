@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { BaseController } from "../base/base";
 import responseHandler from "../base/responseHandler";
 import { buyerBillDataQuery } from "../../models/dataQueries";
-import { EBillStatus } from "../../interfaces";
+import { EBillStatus, EPaymentStatus } from "../../interfaces";
 
 const billQuery = buyerBillDataQuery;
 
@@ -24,7 +24,8 @@ class BuyerBillController extends BaseController {
                 limit,
                 page,
                 status,
-                shopId
+                shopId,
+                paymentStatus,
             } = req.query;
             const [bills, total] = await billQuery.getList({
                 limit: Number(limit),
@@ -33,6 +34,9 @@ class BuyerBillController extends BaseController {
                     status: status as EBillStatus,
                     shop: {
                         id: Number(shopId)
+                    },
+                    payment: {
+                        paidStatus: paymentStatus as EPaymentStatus
                     }
                 }
             });

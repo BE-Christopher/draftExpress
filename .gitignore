@@ -1,3 +1,4 @@
 # base folders
 dist
 node_modules
+src/asserts

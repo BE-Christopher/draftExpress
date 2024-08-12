@@ -26,7 +26,7 @@ const DURATION_WAITING = 5 * 60 * 1000;
 const WINDOW_WAITING = 3 * 60 * 1000;
 
 class PuppeteerController {
-    delayTime = (time: number) => {
+    delayTime = async (time: number) => {
         return new Promise((resolved) => {
             setTimeout(resolved, time);
         });
@@ -35,6 +35,12 @@ class PuppeteerController {
     randomWatchingTime = (videoDuration: number) => {
         const minDuration = 3 * 60 * 1000;
         return Math.floor(Math.random() * (videoDuration - minDuration)) + minDuration;
+    };
+
+    randomWaitingTIme = () => {
+        const min = 1 * 6 * 1000;
+        const max = 15 * 6 * 1000;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
     booleanRandom = () => Math.random() < 0.5;
@@ -46,12 +52,17 @@ class PuppeteerController {
         const windowId = uuidV4();
         console.log('???????????????????view by link//', windowId);
 
-        const waitingTime = this.randomWatchingTime(DURATION_WAITING);
-        this.delayTime(waitingTime);
+        // waiting time
+        const waitingTime = this.randomWaitingTIme();
+        console.log(`>>>>>>>>>>>>>>>>>>>>${windowId} waiting in ${waitingTime / 6000}<<<<<<<<<<<<<<<<<<<<<<<<`);
+        await this.delayTime(waitingTime);
+
         const browser = await puppeteer.launch({
             headless: false,
             // executablePath: "C:/Users/locbt/OneDrive/Máy tính/Tor Browser/Browser/firefox.exe",
-            args: ['--proxy-server=192.168.1.5:8118']
+            // args: ['--proxy-server=192.168.1.5:8118'] - laptop
+            args: ['--proxy-server=192.168.0.151:8118']
+
         });
         try {
             const page = await browser.newPage();
@@ -82,12 +93,15 @@ class PuppeteerController {
     }: IViewRunning) => {
         const windowId = uuidV4();
         console.log('???????????????????view by search//', windowId);
-        const waitingTime = this.randomWatchingTime(DURATION_WAITING);
-        this.delayTime(waitingTime);
+        const waitingTime = this.randomWaitingTIme();
+        console.log(`>>>>>>>>>>>>>>>>>>>>${windowId} waiting in ${waitingTime / 6000}<<<<<<<<<<<<<<<<<<<<<<<<`);
+        await this.delayTime(5000);
+
         const browser = await puppeteer.launch({
             headless: false,
             // executablePath: "C:/Users/locbt/OneDrive/Máy tính/Tor Browser/Browser/firefox.exe",
-            args: ['--proxy-server=192.168.1.5:8118']
+            // args: ['--proxy-server=192.168.1.5:8118']
+            args: ['--proxy-server=192.168.0.151:8118']
         });
 
         try {
@@ -97,6 +111,7 @@ class PuppeteerController {
                 waitUntil: ['domcontentloaded', 'load', 'networkidle2'],
                 timeout: WINDOW_WAITING
             });
+
             await this.delayTime(5000);
 
             // click and search
@@ -169,14 +184,13 @@ class PuppeteerController {
     };
 
     puppeteerRunning = async (req: Request, res: Response) => {
-            res.status(200).send('success');
+        res.status(200).send('success');
 
         try {
             const { source } = req.body;
             const videos = source as unknown as Array<IVideo>;
             // pick 3 element from root arr
             const targetVideos = this.randomTargetVideos(videos);
-            console.log('Running');
             for (let i = 0; i < targetVideos.length; i++) {
                 const pickedVideo = targetVideos[i];
 
@@ -188,9 +202,11 @@ class PuppeteerController {
                     while (index < increaseNumber) {
                         const timeWatching: number = this.randomWatchingTime(pickedVideo.videoDuration);
                         console.log("🚀 ~ puppeteerRunning ~ timeWatching:", timeWatching / 60000);
+                        console.log('\n');
+
                         const randomFlag: boolean = this.booleanRandom();
-                        const runningFnc = randomFlag ? this.viewByLink : this.viewBySearch; 0;
-                        // const runningFnc = viewBySearch;
+                        // const runningFnc = randomFlag ? this.viewByLink : this.viewBySearch; 0;
+                        const runningFnc = this.viewBySearch;
                         windows.push(runningFnc({
                             element: pickedVideo,
                             timeWatching

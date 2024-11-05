@@ -1,4 +1,4 @@
-import { addDays, format, isFriday, isMonday, isSaturday, isSunday, isThursday, isTuesday, isWednesday } from "date-fns";
+import { addDays, format, isBefore, isFriday, isMonday, isSaturday, isSunday, isThursday, isTuesday, isWednesday } from "date-fns";
 import csvProcess from "./csvProcess";
 import { DayPercent, DaysName, generateAllDateInYear, generateDatePercent, generateMonthPercent, generatePercent, generateYearPercent, MonthPercent, MonthsIndex, MonthsName, originSourceNb, SimplePercent, YearPercent, YearTicketPeriod } from "./dataProcess.interface";
 
@@ -37,17 +37,17 @@ const dataProcess = () => {
         year
     }: generateAllDateInYear) => {
         // generate start and end dates
-        const startDateOfYear = new Date(year, 0, 1);
-        const endDateOfYear = new Date(year, 11, 31);
+        const startDateOfYear = new Date(Date.UTC(year, 0, 1));
+        const endDateOfYear = new Date(Date.UTC(year, 11, 31));
+        const today = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
         const result = [];
         // switch check month case
         const pitchingDay = checkDate(day);
 
+        let indexDate = pitchingDay(startDateOfYear) ? startDateOfYear : addDays(startDateOfYear, (3 - startDateOfYear.getDay() + 7) % 7);
 
-        let indexDate = pitchingDay(startDateOfYear) ? startDateOfYear : addDays(startDateOfYear, (8 - startDateOfYear.getDay()) % 7);
-
-        while (indexDate <= endDateOfYear) {
-            const pushingDate = format(indexDate, 'dd MM yyyy');
+        while (isBefore(indexDate, today) && indexDate <= endDateOfYear) {
+            const pushingDate = format(indexDate, 'dd/MM/yyyy');
             result.push(pushingDate);
             indexDate = addDays(indexDate, 7);
         }

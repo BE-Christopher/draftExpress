@@ -4,13 +4,25 @@ export interface DayTicketPeriod {
     special: string;
     one: string;
     two: string,
-    three: string,
-    four: string,
+    three: string | string[],
+    four: string | string[],
     five: string;
-    six: string,
+    six: string | string[],
     seven: string,
     eight: string;
 }
+
+export const ticketPrizeName: (keyof DayTicketPeriod)[] = [
+    "eight",
+    "seven",
+    "six",
+    "five",
+    "four",
+    "three",
+    "two",
+    "one",
+    "special"
+];
 
 export type YearTicketPeriod = DayTicketPeriod[];
 
@@ -109,3 +121,24 @@ export interface generateYearPercent {
     sourceFilePath: string[];
     outputFilePath: string;
 }
+
+// for CT ticket
+export const yearCawing = [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+];

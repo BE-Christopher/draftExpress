@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { FindManyOptions, Repository } from "typeorm";
 import AppDataSource from "../models/DataSource";
 import DayTicketPeriod from "../models/dayTicketPeriod";
 
@@ -14,6 +14,9 @@ class DayTickerRepository {
         return this.repo.save(payload);
     }
 
+    public getItems(payload: FindManyOptions<DayTicketPeriod>) {
+        return this.repo.findAndCount(payload);
+    }
 }
 
-export default DayTickerRepository;
+export default new DayTickerRepository();

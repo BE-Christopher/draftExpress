@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import DayTicketPeriod from "./dayTicketPeriod";
+import MicroData from "./microData";
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
@@ -9,7 +10,8 @@ export const AppDataSource = new DataSource({
     password: 'my_password',
     database: 'my_database',
     entities: [
-        DayTicketPeriod
+        DayTicketPeriod,
+        MicroData
     ],
     synchronize: false,
     logging: true,

@@ -142,3 +142,37 @@ export const yearCawing = [
     2023,
     2024
 ];
+
+export enum LocationCode {
+    CT = 'CT'
+}
+export enum awardNumbers {
+    EIGHT = "eight",
+    SEVEN = "seven",
+    SIX = "six",
+    FIVE = "five",
+    FOUR = "four",
+    THREE = "three",
+    TWO = "two",
+    ONE = "one",
+    SPECIAL = "special"
+}
+
+export enum calculateBy {
+    totalDate = 'TotalDate',
+    totalAware = 'TotalAware'
+}
+
+export enum TypeProcess {
+    FirstCrawler = 'FirstCrawler',
+    UpdateAfterCraw = 'UpdateAfterCraw'
+}
+
+export enum Units {
+    Unit = 'Unit',
+    Ten = 'Ten',
+    Hundred = 'Hundred',
+    Thousand = 'Thousand',
+    TenThousand = 'TenThousand',
+    HundredThousand = 'HundredThousand'
+}

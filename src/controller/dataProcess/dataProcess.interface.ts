@@ -1,5 +1,5 @@
 // Source data structure
-export interface DayTicketPeriod {
+export interface DayTicketPeriodInterface {
     date: string;
     special: string;
     one: string;
@@ -12,7 +12,7 @@ export interface DayTicketPeriod {
     eight: string;
 }
 
-export const ticketPrizeName: (keyof DayTicketPeriod)[] = [
+export const ticketPrizeName: (keyof DayTicketPeriodInterface)[] = [
     "eight",
     "seven",
     "six",
@@ -24,7 +24,7 @@ export const ticketPrizeName: (keyof DayTicketPeriod)[] = [
     "special"
 ];
 
-export type YearTicketPeriod = DayTicketPeriod[];
+export type YearTicketPeriod = DayTicketPeriodInterface[];
 
 export const originSourceNb = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -176,3 +176,9 @@ export enum Units {
     TenThousand = 'TenThousand',
     HundredThousand = 'HundredThousand'
 }
+
+export const twoDigitAware = [awardNumbers.EIGHT];
+export const threeDigitAware = [awardNumbers.SEVEN];
+export const fourDigitAware = [awardNumbers.SIX, awardNumbers.FIVE];
+export const fiveDigitAware = [awardNumbers.ONE, awardNumbers.TWO, awardNumbers.THREE, awardNumbers.FOUR];
+export const sixDigitAware = [awardNumbers.SPECIAL];

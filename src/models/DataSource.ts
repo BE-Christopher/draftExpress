@@ -3,11 +3,11 @@ import DayTicketPeriod from "./dayTicketPeriod";
 import MicroData from "./microData";
 
 export const AppDataSource = new DataSource({
-    type: 'mysql',
+    type: 'postgres',
     host: 'localhost',
-    port: 3306,
-    username: 'my_user',
-    password: 'my_password',
+    port: 5432,
+    username: 'user',
+    password: 'password',
     database: 'my_database',
     entities: [
         DayTicketPeriod,
@@ -17,7 +17,6 @@ export const AppDataSource = new DataSource({
     logging: true,
     migrations: ["src/migrations/*{.ts,.js}"],
     subscribers: ['src/subscriber/**/*.ts'],
-    driver: {}
 });
 
 export default AppDataSource;

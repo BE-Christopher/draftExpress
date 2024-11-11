@@ -1,7 +1,7 @@
 import 'chromedriver';
 import { format, parse } from 'date-fns';
 import { Builder, By } from "selenium-webdriver";
-import { DaysName, DayTicketPeriod, yearCawing, YearTicketPeriod } from './controller/dataProcess';
+import { DaysName, DayTicketPeriodInterface, yearCawing } from './controller/dataProcess';
 import dataProcess from "./controller/dataProcess/dataProcess";
 import AppDataSource from './models/DataSource';
 import DayTickerRepository from './repositories/dayTicket';

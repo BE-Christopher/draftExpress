@@ -3,9 +3,9 @@ import * as csvParser from 'csv-parser';
 import { Parser } from 'json2csv';
 
 
-const sourceFolder = 'dist/SourceFiles';
-const outFolder = 'dist/OutFiles';
-const exportMappingFilePath = '"C:/Users/ADMIN/Downloads/Export_status_mapping_160824.csv"';
+const sourceFolder = 'C:/Sources/draftExpress/dist/SourceFiles';
+const outFolder = 'C:/Sources/draftExpress/dist/OutFiles';
+const exportMappingFilePath = 'C:/Sources/draftExpress/dist/Export_status_mapping_160824.csv';
 
 const pickingStatus = [
     'HYPASHIP',
@@ -13,13 +13,13 @@ const pickingStatus = [
 ];
 
 interface SourceData {
-    trackingnumer: string,
+    trackingnumber: string,
     ediname: string,
-    statuscode: string,
+    statusname: string,
     statusdescription: string,
     reasoncode: string,
     reasondescription: string,
-    scandate: string,
+    scandatetime: string,
     fromlocationcode: string,
     fromlocationname: string,
     tolocationcode: string,
@@ -28,26 +28,25 @@ interface SourceData {
 }
 
 interface ExportMapping {
-    EDIname: string,
-    EDIdescription: string,
-    Service: string,
-    Customer: string,
-    Ordering: string,
-    Internalstatusname: string,
-    Internalreasoncode: string,
-    Outstatuscode: string,
-    Outreasoncode: string,
-    Trackandtracedescription: string,
-    Eventcode: string,
-    Detailtemplate: string,
-    Associateddataname: string,
-    Associateddatatexttemplate: string,
-    EventtransactionID: string,
-    Successorfailure: string,
-    Eventdescription: string,
-    Nondeliveryreason: string,
-    Nondeliverymeasure: string,
-
+    ediname: string,
+    edidescription: string,
+    service: string,
+    customer: string,
+    ordering: string,
+    internalstatusname: string,
+    internalreasoncode: string,
+    outstatuscode: string,
+    outreasoncode: string,
+    trackandtracedescription: string,
+    eventcode: string,
+    detailtemplate: string,
+    associateddataname: string,
+    associateddatatexttemplate: string,
+    eventtransactionID: string,
+    successorfailure: string,
+    eventdescription: string,
+    nondeliveryreason: string,
+    nondeliverymeasure: string,
 }
 
 interface LZPatch {
@@ -78,14 +77,37 @@ const PatchKeys = [
     'CustAccNum',
 ];
 
+const internalStatusName = [
+    'DA0', 'DBF', 'DBT', 'DBH', 'DBH',
+    'DBR', 'DBX', 'DBS', 'DWI', 'DYC',
+    'DYB', 'DYO', 'DYI', 'RBN', 'DYZ',
+    'DBC', 'DBC', 'DZI', 'DZX', 'DZO',
+    'DZC', 'DA1', 'DA2', 'DA3', 'DA4',
+    'DBT', 'DBH', 'DB0', 'DB0', 'DB0',
+    'DB0', 'DB1', 'DBH', 'DBH', 'DB0',
+    'DWB', 'RWB', 'DBJ', 'DWL', 'DBS',
+    'RWI'
+];
 
-const listFiles = async (folderPath: string) => {
-    const filesName: string[] = [];
-    const files = await fs.readdir(folderPath, (err, files) => {
-        files.forEach(file => filesName.push(file));
-    });
+const internalReasonCode = [
+    'DBT01', 'DBH03', 'DBH02',
+    'DBR01', 'DBS01', 'DBC08',
+    'DBC09', 'DBT02', 'DBH01',
+    'DB001', 'DB002', 'DB003',
+    'DB005', 'DB101', 'DBH04',
+    'DBH05', 'DB004', 'DBS03'
+];
 
-    return filesName;
+const filterStartLineChars = [
+    'PP',
+    'RA',
+    'TP',
+    'SM',
+    'S2',
+];
+
+const listFiles = (folderPath: string) => {
+    return fs.readdirSync(folderPath);
 };
 
 const csv2Arr = (path: string) => {
@@ -102,28 +124,38 @@ const csv2Arr = (path: string) => {
     });
 };
 
+const filterArray = (item: SourceData, status: string[], reason: string[]) => {
+    if (!pickingStatus.includes(item.ediname)) return false;
+    if (filterStartLineChars.includes((item.trackingnumber as string).slice(0, 2))) return false;
+    if (!status.includes(item.statusname)) return false;
+    if (item.reasoncode && !reason.includes(item.reasoncode)) return false;
+
+    return true;
+};
+
 const generatePatch = (data: SourceData, mapper: ExportMapping[], id: string) => {
     // pick mapper status
-    const checkMap = mapper.filter(line => line.Internalstatusname === data.statuscode);
+    const checkMap = mapper.filter(line => line.internalstatusname === data.statusname);
     if (!checkMap.length) return -1;
 
     // pick reason
-    const reasonIdx = checkMap.findIndex(line => line.Internalreasoncode === data.reasoncode);
+    const reasonIdx = checkMap.findIndex(line => line.internalreasoncode === data.reasoncode);
     const {
-        Outreasoncode,
-        Outstatuscode
+        outreasoncode,
+        outstatuscode
     } = checkMap[reasonIdx != -1 ? reasonIdx : 0];
 
     // date processing
-    const [date, time] = data.scandate.split(' ');
+    const [date, time] = data.scandatetime.split(' ');
     const [day, month, year] = date.split('/');
-    const processedDate = `${month}/${day}/${year} ${time}`;
+    const [hours, minutes] = time.split(':');
+    const processedDate = `${month}/${day}/${year.slice(-2)} ${hours}:${minutes}`;
 
     const line: LZPatch = {
         ItemID: id,
-        ItemNo: data.trackingnumer,
-        Status: Outstatuscode,
-        ReasonCode: Outreasoncode,
+        ItemNo: data.trackingnumber,
+        Status: outstatuscode,
+        ReasonCode: outreasoncode !== '*' ? outreasoncode : '',
         status_code_id: '',
         status_date: processedDate,
         FromLocationCode: data.fromlocationcode,
@@ -152,14 +184,13 @@ const saveFiles = (data: LZPatch[], fileName: string) => {
 const automatedGeneratePathFiles = async (sourceFolder: string, outFolder: string) => {
     // read all csv files
     const sourceFilePaths: string[] = await listFiles(sourceFolder);
-    const exportMappingData: ExportMapping[] = await csv2Arr(exportMappingFilePath) as unknown as ExportMapping[];
+    const exportMappingData: ExportMapping[] = (await csv2Arr(exportMappingFilePath) as unknown as ExportMapping[]).filter(item => item.ediname === '0099999A');
 
     // one by one process
     for (const file of sourceFilePaths) {
         // read file
         const path = `${sourceFolder}/${file}`;
-        const draftData: SourceData[] = await csv2Arr(path) as unknown as SourceData[];
-        const data = draftData.filter((line) => pickingStatus.includes(line.ediname));
+        const data: SourceData[] = (await csv2Arr(path) as unknown as SourceData[]).filter(item => filterArray(item, internalStatusName, internalReasonCode));
         const results: LZPatch[] = [];
 
         data.forEach((item, index) => {
@@ -168,7 +199,9 @@ const automatedGeneratePathFiles = async (sourceFolder: string, outFolder: strin
         });
 
         // save files
-        saveFiles(results, 'demo');
+        saveFiles(results, `${outFolder}/LZPatch`);
+
+        console.log('>>>>>>>>>>>>>>>>>>Generated files<<<<<<<<<<<<<<<<<<');
     }
 };
 

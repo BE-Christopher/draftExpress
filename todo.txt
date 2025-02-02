@@ -1,0 +1,21 @@
+file getting to process
+- scan rp with version tail
+- mapping data
+
+step by step to process
+
+------ handler pre process -----
+1) pre process scan rp file, rm unused field and check ezytrak number valid items
+2) rename file to type scan rp - V..
+
+------ script handler ----------
+3) transform csv file to array
+4) filter to remove all Unused items
+//5) pick unique scanRP status and reason (from origin to transforming)
+6) loop unique mapping status and reason
+ - pick and transform status + reason match one - one, if has items not match -> continue that item and push to err item with reason
+ - pick col fr scanRP to LZPatch interfaces
+ - str convert + swap date col
+7) throw 2 arr => mappedData + errItemMappingData
+8) convert mappedData to csv file
+9) response

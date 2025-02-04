@@ -17,6 +17,44 @@ const csv2arr = (filePath: string): Promise<any[]> => {
     });
 };
 
+// const excel2arr = (filePath: string): Promise<any[]> => {
+//     return new Promise((resolve, reject) => {
+//         try {
+//             const workbook = xlsx.readFile(filePath);
+//             const sheetName = workbook.SheetNames[0];
+//             const worksheet = workbook.Sheets[sheetName];
+
+//             const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+
+//             if (data.length < 2) return resolve([]);
+
+//             const headers = data[0].map((h) => h?.toString().trim().toLowerCase().replace(/\s+/g, '') || '');
+
+//             const results = data.slice(1).map((row) => {
+//                 return Object.fromEntries(
+//                     headers.map((header, i) => {
+//                         let value = row[i];
+
+//                         if (typeof value === 'number' && header.includes('date')) {
+//                             const parsedDate = xlsx.SSF.parse_date_code(value);
+
+//                             const pad = (num: number) => num.toString().padStart(2, '0');
+
+//                             value = `${parsedDate.m}/${parsedDate.d}/${parsedDate.y.toString().slice(-2)} ${pad(parsedDate.H)}:${pad(parsedDate.M)}:${pad(parsedDate.S)}`;
+//                         }
+
+//                         return [header, value || ''];
+//                     })
+//                 );
+//             });
+
+//             resolve(results);
+//         } catch (error) {
+//             reject(error);
+//         }
+//     });
+// };
+
 const excel2arr = (filePath: string): Promise<any[]> => {
     return new Promise((resolve, reject) => {
         try {
@@ -31,7 +69,7 @@ const excel2arr = (filePath: string): Promise<any[]> => {
             const headers = data[0].map((h) => h?.toString().trim().toLowerCase().replace(/\s+/g, '') || '');
 
             const results = data.slice(1).map((row) => {
-                return Object.fromEntries(
+                const result = Object.fromEntries(
                     headers.map((header, i) => {
                         let value = row[i];
 
@@ -46,7 +84,13 @@ const excel2arr = (filePath: string): Promise<any[]> => {
                         return [header, value || ''];
                     })
                 );
-            });
+
+                if (result.trackingnumber && !filterTrackingNumbers(result.trackingnumber)) {
+                    return null;
+                }
+
+                return result;
+            }).filter((item) => item !== null);
 
             resolve(results);
         } catch (error) {
@@ -116,6 +160,28 @@ const excelSaving = async ({ details, fileName }: { details: LZPatch[]; fileName
     } catch (error) {
         console.error("❌ Error saving Excel file:", error);
     }
+};
+
+const filterTrackingNumbers = (trackingNumber: string): boolean => {
+    if (!trackingNumber) return false;
+
+    // Mẫu regex loại bỏ:
+    const patternsToRemove = [
+        /^PP\d+SG$/,
+        /^RA\d+SG$/,
+        /^TP\d+SG$/,
+        /^SM\d+SG$/,
+        /^S2\d+$/
+    ];
+
+    // Kiểm tra nếu khớp với bất kỳ pattern nào thì loại bỏ
+    for (const pattern of patternsToRemove) {
+        if (pattern.test(trackingNumber)) {
+            return false;
+        }
+    }
+
+    return true; // Giữ lại nếu không khớp bất kỳ pattern nào
 };
 
 const GenerateLZPatch = async () => {
